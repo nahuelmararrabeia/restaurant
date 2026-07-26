@@ -38,10 +38,10 @@ public class TableRepository : ITableRepository
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<Table?> GetByNumberAsync(int number, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsByNumberAsync(int number, CancellationToken cancellationToken = default)
     {
         return await _context.Tables
-            .FirstOrDefaultAsync(x => x.Number == number, cancellationToken);
+            .AnyAsync(x => x.Number == number, cancellationToken);
     }
 
     public async Task AddAsync(Table table, CancellationToken cancellationToken = default)
