@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Restaurant.Domain.Common;
 using Restaurant.Domain.Entities;
+using Restaurant.Domain.Entities.Common;
 using System.Reflection.Emit;
 
 namespace Restaurant.Infrastructure.Persistence;

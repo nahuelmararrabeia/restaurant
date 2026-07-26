@@ -1,4 +1,4 @@
-﻿namespace Restaurant.Domain.Common
+﻿namespace Restaurant.Domain.Entities.Common
 {
     public abstract class AuditableEntity : Entity
     {
