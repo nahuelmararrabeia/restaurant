@@ -7,6 +7,26 @@ namespace Restaurant.Domain.Entities
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public decimal Price { get; set; }
-        public bool IsAvailable { get; set; } = true;
+        public bool IsAvailable { get; private set; } = true;
+
+        public void Enable()
+        {
+            IsAvailable = true;
+        }
+
+        public void Disable()
+        {
+            IsAvailable = false;
+        }
+
+        public void Update(
+            string name,
+            string? description,
+            decimal price)
+        {
+            Name = name;
+            Description = description;
+            Price = price;
+        }
     }
 }

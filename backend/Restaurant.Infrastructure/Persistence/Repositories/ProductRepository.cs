@@ -42,11 +42,6 @@ public class ProductRepository : IProductRepository
         await _context.Products.AddAsync(product, cancellationToken);
     }
 
-    public void Update(Product product)
-    {
-        _context.Products.Update(product);
-    }
-
     public void Delete(Product product)
     {
         _context.Products.Remove(product);
