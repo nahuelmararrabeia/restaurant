@@ -1,3 +1,4 @@
+using Restaurant.Api;
 using TaskManagement.Application;
 using TaskManagement.Infrastructure;
 
@@ -7,13 +8,13 @@ builder.Services.AddApplication();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-builder.Services.AddHealthChecks();
+builder.Services.AddApi();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -24,6 +25,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
 
 app.MapControllers();
 
