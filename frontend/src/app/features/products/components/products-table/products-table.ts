@@ -1,5 +1,10 @@
 import { CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output
+} from '@angular/core';
 import { ProductStatusBadge } from '../product-status-badge/product-status-badge';
 import { RouterLink } from '@angular/router';
 import { Product } from '../../../../shared/domain/products/product';
@@ -17,4 +22,6 @@ import { Product } from '../../../../shared/domain/products/product';
 })
 export class ProductsTable {
   readonly products = input.required<Product[]>();
+  readonly deletingProductId = input<number | null>(null);
+  readonly deleteProduct = output<Product>();
 }

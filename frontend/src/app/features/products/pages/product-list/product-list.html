@@ -6,6 +6,14 @@
     [actionLink]="['/products', 'new']"
   />
 
+  @if (actionError()) {
+    <error-state
+      [text]="actionError()"
+      buttonText="×"
+      (onClickButton)="clearActionError()"
+    />
+  }
+
   @if (loading()) {
     <loading-state text="Loading products..." />
   } @else if (error()) {
@@ -24,7 +32,11 @@
   } @else {
     <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       <div class="overflow-x-auto">
-        <products-table [products]="products()" />
+        <products-table
+          [products]="products()"
+          [deletingProductId]="deletingProductId()"
+          (deleteProduct)="deleteProduct($event)"
+        />
       </div>
     </div>
   }

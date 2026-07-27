@@ -13,5 +13,6 @@ public interface IOrderItemRepository
     void Delete(OrderItem orderItem);
 
     Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default);
+    Task<bool> ExistsByProductIdAsync(int productId, CancellationToken cancellationToken = default);
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

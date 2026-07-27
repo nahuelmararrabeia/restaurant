@@ -60,6 +60,15 @@ public class OrderItemRepository : IOrderItemRepository
         return await _context.OrderItems.AnyAsync(x => x.Id == id, cancellationToken);
     }
 
+    public async Task<bool> ExistsByProductIdAsync(
+        int productId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.OrderItems.AnyAsync(
+            item => item.ProductId == productId,
+            cancellationToken);
+    }
+
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return _context.SaveChangesAsync(cancellationToken);

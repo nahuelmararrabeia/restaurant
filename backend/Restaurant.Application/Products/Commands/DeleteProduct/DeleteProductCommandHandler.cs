@@ -1,4 +1,5 @@
-﻿using MediatR;
+using MediatR;
+using Restaurant.Application.Common.Exceptions;
 using Restaurant.Domain.Repositories;
 
 namespace Restaurant.Application.Products.Commands.DeleteProduct;
@@ -7,10 +8,14 @@ public sealed class DeleteProductCommandHandler
     : IRequestHandler<DeleteProductCommand>
 {
     private readonly IProductRepository _repository;
+    private readonly IOrderItemRepository _orderItemRepository;
 
-    public DeleteProductCommandHandler(IProductRepository repository)
+    public DeleteProductCommandHandler(
+        IProductRepository repository,
+        IOrderItemRepository orderItemRepository)
     {
         _repository = repository;
+        _orderItemRepository = orderItemRepository;
     }
 
     public async Task Handle(
@@ -23,6 +28,13 @@ public sealed class DeleteProductCommandHandler
 
         if (product is null)
             throw new KeyNotFoundException("Product not found.");
+
+        var isUsedInOrders = await _orderItemRepository
+            .ExistsByProductIdAsync(request.Id, cancellationToken);
+
+        if (isUsedInOrders)
+            throw new ConflictException(
+                "Products used in existing orders cannot be deleted.");
 
         _repository.Delete(product);
 
