@@ -1,42 +1,24 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   OnInit,
-  computed,
   inject,
-  signal,
   viewChild
 } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize, forkJoin, Observable } from 'rxjs';
 
-import { Order } from '../../../../shared/domain/orders/order';
-import { OrderStatusBadge } from '../../components/order-status-badge/order-status-badge';
-import { OrdersApi } from '../../services/orders-api';
-import { AddOrderItemForm } from '../../components/add-order-item-form/add-order-item-form';
 import { ORDER_STATUS } from '../../../../shared/domain/orders/order-status';
-import { Product } from '../../../../shared/domain/products/product';
-import { ProductsApi } from '../../../products/services/products-api';
-import { OrderItemFormValue } from '../../models/order-item-form-value';
-import { HttpErrorResponse } from '@angular/common/http';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
-
-type OrderItemAction = 'update' | 'remove';
-
-interface OrderItemActionState {
-  itemId: number;
-  action: OrderItemAction;
-}
-
-type OrderAction =
-  | 'start-preparing'
-  | 'mark-ready'
-  | 'deliver'
-  | 'cancel';
+import { AddOrderItemForm } from '../../components/add-order-item-form/add-order-item-form';
+import { OrderStatusBadge } from '../../components/order-status-badge/order-status-badge';
+import { OrderItemFormValue } from '../../models/order-item-form-value';
+import {
+  OrderAction,
+  OrderItemAction,
+  OrdersService
+} from '../../services/orders-service';
 
 @Component({
   selector: 'app-order-detail',
@@ -50,164 +32,50 @@ type OrderAction =
     LoadingState,
     ErrorState
   ],
+  providers: [OrdersService],
   templateUrl: './order-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrderDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
-  private readonly ordersApi = inject(OrdersApi);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly ordersService = inject(OrdersService);
 
   readonly addItemForm = viewChild(AddOrderItemForm);
-
-  readonly order = signal<Order | null>(null);
-  readonly loading = signal(false);
-  readonly error = signal<string | null>(null);
-  private readonly productsApi = inject(ProductsApi);
-
-  readonly products = signal<Product[]>([]);
-
-  readonly addingItem = signal(false);
-  readonly actionError = signal<string | null>(null);
-  readonly itemAction = signal<OrderItemActionState | null>(null);
-  readonly orderAction = signal<OrderAction | null>(null);
-
   readonly ORDER_STATUS = ORDER_STATUS;
 
-  readonly totalUnits = computed(() => {
-    const order = this.order();
-
-    if (!order) {
-      return 0;
-    }
-
-    return order.items.reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
-  });
-
-  readonly canEdit = computed(() => {
-    return (
-      this.order()?.status === ORDER_STATUS.Pending &&
-      !this.isAnyOrderActionRunning()
-    );
-  });
-
-  readonly canStartPreparing = computed(
-    () => this.order()?.status === ORDER_STATUS.Pending
-  );
-
-  readonly canMarkReady = computed(
-    () => this.order()?.status === ORDER_STATUS.Preparing
-  );
-
-  readonly canDeliver = computed(
-    () => this.order()?.status === ORDER_STATUS.Ready
-  );
-
-  readonly canCancel = computed(() => {
-    const status = this.order()?.status;
-
-    return status === ORDER_STATUS.Pending
-      || status === ORDER_STATUS.Preparing
-      || status === ORDER_STATUS.Ready;
-  });
-
-  private orderId: number | null = null;
+  readonly order = this.ordersService.order;
+  readonly products = this.ordersService.products;
+  readonly loading = this.ordersService.loading;
+  readonly error = this.ordersService.error;
+  readonly addingItem = this.ordersService.addingItem;
+  readonly actionError = this.ordersService.actionError;
+  readonly totalUnits = this.ordersService.totalUnits;
+  readonly canEdit = this.ordersService.canEdit;
+  readonly canStartPreparing = this.ordersService.canStartPreparing;
+  readonly canMarkReady = this.ordersService.canMarkReady;
+  readonly canDeliver = this.ordersService.canDeliver;
+  readonly canCancel = this.ordersService.canCancel;
 
   ngOnInit(): void {
-    const id = Number(
-      this.route.snapshot.paramMap.get('id')
-    );
+    const id = Number(this.route.snapshot.paramMap.get('id'));
 
     if (!Number.isInteger(id) || id <= 0) {
-      this.error.set('El identificador de la orden no es válido.');
+      this.ordersService.setInvalidOrderIdError();
       return;
     }
 
-    this.orderId = id;
-    this.loadOrder();
+    this.ordersService.initialize(id);
   }
 
   loadOrder(): void {
-    if (this.orderId === null || this.loading()) {
-      return;
-    }
-
-    this.loading.set(true);
-    this.error.set(null);
-
-    forkJoin({
-      order: this.ordersApi.getById(this.orderId),
-      products: this.productsApi.getAll()
-    })
-      .pipe(
-        finalize(() => this.loading.set(false)),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe({
-        next: ({ order, products }) => {
-          this.order.set(order);
-          this.products.set(products);
-        },
-        error: () => {
-          this.error.set(
-            'No se pudo cargar la información de la orden.'
-          );
-        }
-      });
+    this.ordersService.loadOrder();
   }
 
   addItem(value: OrderItemFormValue): void {
-    if (
-      this.orderId === null ||
-      this.addingItem() ||
-      !this.canEdit()
-    ) {
-      return;
-    }
-
-    this.addingItem.set(true);
-    this.actionError.set(null);
-
-    this.ordersApi
-      .addItem(this.orderId, {
-        productId: value.productId,
-        quantity: value.quantity,
-        notes: value.notes
-      })
-      .pipe(
-        finalize(() => this.addingItem.set(false)),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe({
-        next: order => {
-          this.order.set(order);
-          this.addItemForm()?.reset();
-        },
-        error: (error: HttpErrorResponse) => {
-          if (error.status === 409) {
-            this.actionError.set(
-              'La orden ya no puede modificarse porque cambió de estado.'
-            );
-
-            this.loadOrder();
-            return;
-          }
-
-          if (error.status === 404) {
-            this.actionError.set(
-              'La orden o el producto seleccionado ya no existe.'
-            );
-            return;
-          }
-
-          this.actionError.set(
-            'No se pudo agregar el producto. Intentá nuevamente.'
-          );
-        }
-      });
+    this.ordersService.addItem(
+      value,
+      () => this.addItemForm()?.reset()
+    );
   }
 
   changeItemQuantity(
@@ -215,280 +83,55 @@ export class OrderDetail implements OnInit {
     currentQuantity: number,
     delta: number
   ): void {
-    const quantity = currentQuantity + delta;
-
-    if (quantity < 1) {
-      return;
-    }
-
-    this.updateItem(itemId, quantity);
+    this.ordersService.changeItemQuantity(
+      itemId,
+      currentQuantity,
+      delta
+    );
   }
 
   removeItem(itemId: number): void {
-    if (
-      this.orderId === null ||
-      !this.canEdit() ||
-      this.itemAction() !== null
-    ) {
-      return;
-    }
-
-    const item = this.order()
-      ?.items
-      .find(current => current.id === itemId);
-
-    if (!item) {
-      return;
-    }
-
-    const confirmed = window.confirm(
-      `¿Eliminar "${item.productName}" de la orden?`
+    const item = this.order()?.items.find(
+      current => current.id === itemId
     );
 
-    if (!confirmed) {
-      return;
+    if (
+      item &&
+      window.confirm(`¿Eliminar "${item.productName}" de la orden?`)
+    ) {
+      this.ordersService.removeItem(itemId);
     }
-
-    this.itemAction.set({
-      itemId,
-      action: 'remove'
-    });
-
-    this.actionError.set(null);
-
-    this.ordersApi
-      .removeItem(this.orderId, itemId)
-      .pipe(
-        finalize(() => this.itemAction.set(null)),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe({
-        next: order => {
-          this.order.set(order);
-        },
-        error: (error: HttpErrorResponse) => {
-          this.handleItemActionError(error);
-        }
-      });
   }
 
   performOrderAction(action: OrderAction): void {
     if (
-      this.orderId === null ||
-      this.isAnyOrderActionRunning()
+      action !== 'cancel' ||
+      window.confirm('¿Confirmás que querés cancelar esta orden?')
     ) {
-      return;
+      this.ordersService.performOrderAction(action);
     }
-
-    if (!this.isActionAllowed(action)) {
-      return;
-    }
-
-    if (action === 'cancel') {
-      const confirmed = window.confirm(
-        '¿Confirmás que querés cancelar esta orden?'
-      );
-
-      if (!confirmed) {
-        return;
-      }
-    }
-
-    this.orderAction.set(action);
-    this.actionError.set(null);
-
-    this.getOrderActionRequest(action)
-      .pipe(
-        finalize(() => this.orderAction.set(null)),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe({
-        next: order => {
-          this.order.set(order);
-        },
-        error: (error: HttpErrorResponse) => {
-          this.handleOrderActionError(error);
-        }
-      });
   }
 
   isItemBusy(itemId: number): boolean {
-    return this.itemAction()?.itemId === itemId;
+    return this.ordersService.isItemBusy(itemId);
   }
 
   isItemActionRunning(
     itemId: number,
     action: OrderItemAction
   ): boolean {
-    const current = this.itemAction();
-
-    return current?.itemId === itemId &&
-      current.action === action;
+    return this.ordersService.isItemActionRunning(itemId, action);
   }
 
   isOrderActionRunning(action: OrderAction): boolean {
-    return this.orderAction() === action;
+    return this.ordersService.isOrderActionRunning(action);
   }
 
   isAnyOrderActionRunning(): boolean {
-    return this.orderAction() !== null;
+    return this.ordersService.isAnyOrderActionRunning();
   }
 
   clearActionError(): void {
-    this.actionError.set(null);
-  }
-
-  private updateItem(
-    itemId: number,
-    quantity: number
-  ): void {
-    if (
-      this.orderId === null ||
-      !this.canEdit() ||
-      this.itemAction() !== null
-    ) {
-      return;
-    }
-
-    const currentItem = this.order()
-      ?.items
-      .find(item => item.id === itemId);
-
-    if (!currentItem) {
-      return;
-    }
-
-    this.itemAction.set({
-      itemId,
-      action: 'update'
-    });
-
-    this.actionError.set(null);
-
-    this.ordersApi
-      .updateItem(
-        this.orderId,
-        itemId,
-        {
-          quantity,
-          notes: currentItem.notes
-        }
-      )
-      .pipe(
-        finalize(() => this.itemAction.set(null)),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe({
-        next: order => {
-          this.order.set(order);
-        },
-        error: (error: HttpErrorResponse) => {
-          this.handleItemActionError(error);
-        }
-      });
-  }
-
-  private handleItemActionError(
-    error: HttpErrorResponse
-  ): void {
-    if (error.status === 404) {
-      this.actionError.set(
-        'La orden o el producto ya no existe.'
-      );
-      return;
-    }
-
-    if (error.status === 409) {
-      this.actionError.set(
-        'La orden cambió de estado y ya no puede modificarse.'
-      );
-      return;
-    }
-
-    this.actionError.set(
-      'No se pudo actualizar la orden. Intentá nuevamente.'
-    );
-  }
-
-  private getOrderActionRequest(
-    action: OrderAction
-  ): Observable<Order> {
-    if (this.orderId === null) {
-      throw new Error('Order ID is required.');
-    }
-
-    switch (action) {
-      case 'start-preparing':
-        return this.ordersApi.startPreparing(this.orderId);
-
-      case 'mark-ready':
-        return this.ordersApi.markReady(this.orderId);
-
-      case 'deliver':
-        return this.ordersApi.deliver(this.orderId);
-
-      case 'cancel':
-        return this.ordersApi.cancel(this.orderId);
-    }
-  }
-
-  private isActionAllowed(action: OrderAction): boolean {
-    switch (action) {
-      case 'start-preparing':
-        return this.canStartPreparing();
-
-      case 'mark-ready':
-        return this.canMarkReady();
-
-      case 'deliver':
-        return this.canDeliver();
-
-      case 'cancel':
-        return this.canCancel();
-    }
-  }
-
-  private handleOrderActionError(
-    error: HttpErrorResponse
-  ): void {
-    if (error.status === 404) {
-      this.actionError.set(
-        'La orden ya no existe.'
-      );
-      return;
-    }
-
-    if (error.status === 409) {
-      this.actionError.set(
-        'La orden cambió de estado y esta acción ya no está permitida.'
-      );
-
-      this.reloadOrder();
-      return;
-    }
-
-    this.actionError.set(
-      'No se pudo actualizar el estado de la orden. Intentá nuevamente.'
-    );
-  }
-
-  private reloadOrder(): void {
-    if (this.orderId === null) {
-      return;
-    }
-
-    this.ordersApi
-      .getById(this.orderId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: order => {
-          this.order.set(order);
-        },
-        error: () => {
-          this.actionError.set(
-            'No se pudo volver a cargar la orden.'
-          );
-        }
-      });
+    this.ordersService.clearActionError();
   }
 }

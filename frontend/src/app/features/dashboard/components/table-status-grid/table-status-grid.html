@@ -16,10 +16,10 @@
       <article
         class="rounded-lg border p-4"
         [ngClass]="{
-          'border-green-200 bg-green-50': table.status === 'available',
-          'border-red-200 bg-red-50': table.status === 'occupied',
-          'border-amber-200 bg-amber-50': table.status === 'reserved',
-          'border-slate-200 bg-slate-100': table.status === 'disabled'
+          'border-green-200 bg-green-50': table.status === 'Available',
+          'border-red-200 bg-red-50': table.status === 'Occupied',
+          'border-amber-200 bg-amber-50': table.status === 'Reserved',
+          'border-slate-200 bg-slate-100': table.status === 'Disabled'
         }"
       >
         <div class="flex items-start justify-between">
@@ -36,10 +36,10 @@
           <span
             class="h-3 w-3 rounded-full"
             [ngClass]="{
-              'bg-green-500': table.status === 'available',
-              'bg-red-500': table.status === 'occupied',
-              'bg-amber-500': table.status === 'reserved',
-              'bg-slate-400': table.status === 'disabled'
+              'bg-green-500': table.status === 'Available',
+              'bg-red-500': table.status === 'Occupied',
+              'bg-amber-500': table.status === 'Reserved',
+              'bg-slate-400': table.status === 'Disabled'
             }"
           ></span>
         </div>
