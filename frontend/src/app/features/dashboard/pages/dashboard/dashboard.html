@@ -1,3 +1,16 @@
 <h1 class="text-3xl font-bold text-slate-800">
     Dashboard
 </h1>
+
+<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+
+    @for(card of statistics(); track card.title) {
+
+        <stat-card
+            [title]="card.title"
+            [value]="card.value"
+            [icon]="card.icon" />
+
+    }
+
+</div>
