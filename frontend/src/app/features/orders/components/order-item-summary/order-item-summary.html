@@ -1,0 +1,76 @@
+<article
+  class="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+>
+  <div class="min-w-0">
+    <h3 class="font-semibold text-slate-900">
+      {{ item().productName }}
+    </h3>
+
+    <p class="mt-1 text-sm text-slate-500">
+      {{ item().unitPrice | currency: 'EUR' : 'symbol' }}
+      por unidad
+    </p>
+
+    @if (item().notes) {
+      <p class="mt-2 text-sm italic text-slate-500">
+        {{ item().notes }}
+      </p>
+    }
+  </div>
+
+  <div class="flex flex-col gap-3 sm:items-end">
+    <p class="font-semibold text-slate-900">
+      {{ item().subtotal | currency: 'EUR' : 'symbol' }}
+    </p>
+
+    @if (canEdit()) {
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          class="flex size-8 items-center justify-center rounded-lg border border-slate-300 text-sm font-bold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="item().quantity <= 1 || busy()"
+          (click)="quantityChange.emit(-1)"
+        >
+          −
+        </button>
+
+        <span
+          class="min-w-8 text-center text-sm font-semibold text-slate-900"
+        >
+          @if (runningAction() === 'update') {
+            …
+          } @else {
+            {{ item().quantity }}
+          }
+        </span>
+
+        <button
+          type="button"
+          class="flex size-8 items-center justify-center rounded-lg border border-slate-300 text-sm font-bold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="busy()"
+          (click)="quantityChange.emit(1)"
+        >
+          +
+        </button>
+
+        <button
+          type="button"
+          class="ml-2 rounded-lg px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="busy()"
+          (click)="remove.emit()"
+        >
+          @if (runningAction() === 'remove') {
+            Eliminando...
+          } @else {
+            Eliminar
+          }
+        </button>
+      </div>
+    } @else {
+      <p class="text-sm text-slate-500">
+        {{ item().quantity }}
+        {{ item().quantity === 1 ? 'unidad' : 'unidades' }}
+      </p>
+    }
+  </div>
+</article>

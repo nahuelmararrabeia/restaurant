@@ -11,6 +11,8 @@ import { RouterLink } from '@angular/router';
 export class EmptyState {
   readonly title = input.required<string>();
   readonly subtitle = input<string>();
+  readonly icon = input<string>();
+  readonly compact = input(false);
   readonly buttonText = input<string>();
   readonly buttonLink = input<any[]>();
 }

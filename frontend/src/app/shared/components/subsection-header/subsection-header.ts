@@ -11,6 +11,7 @@ import { ButtonBack } from '../button-back/button-back';
 export class SubsectionHeader {
   readonly title = input.required<string>();
   readonly subtitle = input.required<string>();
+  readonly eyebrow = input<string>();
   readonly backButtonText = input<string>();
   readonly onBackButtonClick = output<void>();
 }

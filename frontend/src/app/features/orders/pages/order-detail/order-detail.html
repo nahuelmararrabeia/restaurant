@@ -1,39 +1,31 @@
 <section class="mx-auto max-w-6xl space-y-6">
-  <header>
-    <a
-      routerLink="/orders"
-      class="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900"
+  @if (order(); as currentOrder) {
+    <subsection-header
+      [eyebrow]="'Orden #' + currentOrder.id"
+      [title]="'Mesa ' + currentOrder.tableNumber"
+      [subtitle]="
+        'Creada el ' +
+        (currentOrder.orderedAt | date: 'dd/MM/yyyy HH:mm')
+      "
+      backButtonText="Volver a órdenes"
+      (onBackButtonClick)="goBack()"
     >
-      <span aria-hidden="true">←</span>
-      Volver a órdenes
-    </a>
-
-    @if (order(); as currentOrder) {
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
-            Orden #{{ currentOrder.id }}
-          </p>
-
-          <h1 class="mt-1 text-2xl font-bold text-slate-900">
-            Mesa {{ currentOrder.tableNumber }}
-          </h1>
-
-          <p class="mt-1 text-sm text-slate-500">
-            Creada el
-            {{ currentOrder.orderedAt | date: 'dd/MM/yyyy HH:mm' }}
-          </p>
-        </div>
-
-        <order-status-badge [status]="currentOrder.status" />
-      </div>
-    } @else {
-      <h1 class="text-2xl font-bold text-slate-900">Detalle de la orden</h1>
-    }
-  </header>
+      <order-status-badge
+        subsectionHeaderActions
+        [status]="currentOrder.status"
+      />
+    </subsection-header>
+  } @else {
+    <subsection-header
+      title="Detalle de la orden"
+      subtitle="Consultá la información de la orden."
+      backButtonText="Volver a órdenes"
+      (onBackButtonClick)="goBack()"
+    />
+  }
 
   @if (loading()) {
-    <loading-state text="Loading order..."/>
+    <loading-state text="Loading order..." />
   } @else if (error()) {
     <error-state
       [text]="error()"
@@ -48,9 +40,14 @@
         (onClickButton)="clearActionError()"
       />
     }
+
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+      <div
+        class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+      >
+        <div
+          class="flex items-center justify-between border-b border-slate-200 px-5 py-4"
+        >
           <div>
             <h2 class="font-semibold text-slate-900">Productos</h2>
 
@@ -62,233 +59,49 @@
         </div>
 
         @if (currentOrder.items.length === 0) {
-          <div class="px-6 py-14 text-center">
-            <div
-              class="mx-auto flex size-12 items-center justify-center rounded-full bg-slate-100 text-xl"
-              aria-hidden="true"
-            >
-              🍽️
-            </div>
-
-            <h3 class="mt-4 font-semibold text-slate-900">La orden está vacía</h3>
-
-            <p class="mt-1 text-sm text-slate-500">Todavía no se agregaron productos.</p>
-          </div>
+          <empty-state
+            title="La orden está vacía"
+            subtitle="Todavía no se agregaron productos."
+            icon="🍽️"
+            [compact]="true"
+          />
         } @else {
           <div class="divide-y divide-slate-100">
             @for (item of currentOrder.items; track item.id) {
-              <article
-                class="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div class="min-w-0">
-                  <h3 class="font-semibold text-slate-900">
-                    {{ item.productName }}
-                  </h3>
-
-                  <p class="mt-1 text-sm text-slate-500">
-                    {{ item.unitPrice | currency: 'ARS' : 'symbol-narrow' }}
-                    por unidad
-                  </p>
-
-                  @if (item.notes) {
-                    <p class="mt-2 text-sm italic text-slate-500">
-                      {{ item.notes }}
-                    </p>
-                  }
-                </div>
-
-                <div
-                  class="flex flex-col gap-3 sm:items-end"
-                >
-                  <p class="font-semibold text-slate-900">
-                    {{ item.subtotal | currency: 'EUR' : 'symbol' }}
-                  </p>
-
-                  @if (canEdit()) {
-                    <div class="flex items-center gap-2">
-                      <button
-                        type="button"
-                        class="flex size-8 items-center justify-center rounded-lg border border-slate-300 text-sm font-bold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                        [disabled]="
-                          item.quantity <= 1 ||
-                          isItemBusy(item.id)
-                        "
-                        (click)="changeItemQuantity(
-                          item.id,
-                          item.quantity,
-                          -1
-                        )"
-                      >
-                        −
-                      </button>
-
-                      <span
-                        class="min-w-8 text-center text-sm font-semibold text-slate-900"
-                      >
-                        @if (
-                          isItemActionRunning(
-                            item.id,
-                            'update'
-                          )
-                        ) {
-                          …
-                        } @else {
-                          {{ item.quantity }}
-                        }
-                      </span>
-
-                      <button
-                        type="button"
-                        class="flex size-8 items-center justify-center rounded-lg border border-slate-300 text-sm font-bold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                        [disabled]="isItemBusy(item.id)"
-                        (click)="changeItemQuantity(
-                          item.id,
-                          item.quantity,
-                          1
-                        )"
-                      >
-                        +
-                      </button>
-
-                      <button
-                        type="button"
-                        class="ml-2 rounded-lg px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-                        [disabled]="isItemBusy(item.id)"
-                        (click)="removeItem(item.id)"
-                      >
-                        @if (
-                          isItemActionRunning(
-                            item.id,
-                            'remove'
-                          )
-                        ) {
-                          Eliminando...
-                        } @else {
-                          Eliminar
-                        }
-                      </button>
-                    </div>
-                  } @else {
-                    <p class="text-sm text-slate-500">
-                      {{ item.quantity }}
-                      {{ item.quantity === 1 ? 'unidad' : 'unidades' }}
-                    </p>
-                  }
-                </div>
-              </article>
+              <order-item-summary
+                [item]="item"
+                [canEdit]="canEdit()"
+                [busy]="itemAction()?.itemId === item.id"
+                [runningAction]="
+                  itemAction()?.itemId === item.id
+                    ? itemAction()?.action ?? null
+                    : null
+                "
+                (quantityChange)="
+                  changeItemQuantity(
+                    item.id,
+                    item.quantity,
+                    $event
+                  )
+                "
+                (remove)="removeItem(item.id)"
+              />
             }
           </div>
         }
       </div>
 
       <aside class="space-y-4">
-        <div
-          class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
-        >
-          <h2 class="font-semibold text-slate-900">
-            Estado de la orden
-          </h2>
+        <order-status-card
+          [order]="currentOrder"
+          [canStartPreparing]="canStartPreparing()"
+          [canMarkReady]="canMarkReady()"
+          [canDeliver]="canDeliver()"
+          [canCancel]="canCancel()"
+          [runningAction]="orderAction()"
+          (performAction)="performOrderAction($event)"
+        />
 
-          <p class="mt-1 text-sm text-slate-500">
-            Avanzá la orden según su etapa actual.
-          </p>
-
-          <div class="mt-5 space-y-3">
-            @if (canStartPreparing()) {
-              <button
-                type="button"
-                class="inline-flex w-full items-center justify-center rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
-                [disabled]="isAnyOrderActionRunning()"
-                (click)="performOrderAction('start-preparing')"
-              >
-                @if (isOrderActionRunning('start-preparing')) {
-                  Enviando...
-                } @else {
-                  Enviar a preparación
-                }
-              </button>
-            }
-
-            @if (canMarkReady()) {
-              <button
-                type="button"
-                class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-                [disabled]="isAnyOrderActionRunning()"
-                (click)="performOrderAction('mark-ready')"
-              >
-                @if (isOrderActionRunning('mark-ready')) {
-                  Actualizando...
-                } @else {
-                  Marcar como lista
-                }
-              </button>
-            }
-
-            @if (canDeliver()) {
-              <button
-                type="button"
-                class="inline-flex w-full items-center justify-center rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
-                [disabled]="isAnyOrderActionRunning()"
-                (click)="performOrderAction('deliver')"
-              >
-                @if (isOrderActionRunning('deliver')) {
-                  Entregando...
-                } @else {
-                  Marcar como entregada
-                }
-              </button>
-            }
-
-            @if (canCancel()) {
-              <button
-                type="button"
-                class="inline-flex w-full items-center justify-center rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-                [disabled]="isAnyOrderActionRunning()"
-                (click)="performOrderAction('cancel')"
-              >
-                @if (isOrderActionRunning('cancel')) {
-                  Cancelando...
-                } @else {
-                  Cancelar orden
-                }
-              </button>
-            }
-
-            @if (currentOrder.status === ORDER_STATUS.Delivered) {
-              <div
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3"
-              >
-                <p class="text-sm font-semibold text-emerald-700">
-                  La orden fue entregada.
-                </p>
-
-                @if (currentOrder.closedAt) {
-                  <p class="mt-1 text-xs text-emerald-600">
-                    Cerrada el
-                    {{ currentOrder.closedAt | date: 'dd/MM/yyyy HH:mm' }}
-                  </p>
-                }
-              </div>
-            }
-
-            @if (currentOrder.status === ORDER_STATUS.Cancelled) {
-              <div
-                class="rounded-lg border border-red-200 bg-red-50 px-4 py-3"
-              >
-                <p class="text-sm font-semibold text-red-700">
-                  La orden fue cancelada.
-                </p>
-
-                @if (currentOrder.closedAt) {
-                  <p class="mt-1 text-xs text-red-600">
-                    Cerrada el
-                    {{ currentOrder.closedAt | date: 'dd/MM/yyyy HH:mm' }}
-                  </p>
-                }
-              </div>
-            }
-          </div>
-        </div>
         @if (canEdit()) {
           <div
             class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
@@ -319,43 +132,11 @@
             </p>
           </div>
         }
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 class="font-semibold text-slate-900">Resumen</h2>
 
-          <dl class="mt-5 space-y-4">
-            <div class="flex items-center justify-between gap-4">
-              <dt class="text-sm text-slate-500">Mesa</dt>
-
-              <dd class="text-sm font-semibold text-slate-900">
-                {{ currentOrder.tableNumber }}
-              </dd>
-            </div>
-
-            <div class="flex items-center justify-between gap-4">
-              <dt class="text-sm text-slate-500">Productos</dt>
-
-              <dd class="text-sm font-semibold text-slate-900">
-                {{ totalUnits() }}
-              </dd>
-            </div>
-
-            <div class="flex items-center justify-between gap-4">
-              <dt class="text-sm text-slate-500">Estado</dt>
-
-              <dd>
-                <order-status-badge [status]="currentOrder.status" />
-              </dd>
-            </div>
-
-            <div class="flex items-center justify-between gap-4 border-t border-slate-200 pt-4">
-              <dt class="font-semibold text-slate-900">Total</dt>
-
-              <dd class="text-xl font-bold text-slate-900">
-                {{ currentOrder.total | currency: 'ARS' : 'symbol-narrow' }}
-              </dd>
-            </div>
-          </dl>
-        </div>
+        <order-summary-card
+          [order]="currentOrder"
+          [totalUnits]="totalUnits()"
+        />
       </aside>
     </div>
   }
