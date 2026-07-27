@@ -18,32 +18,32 @@ export class TableStatusBadge {
 
   readonly label = computed(() => {
     switch (this.status()) {
-      case 'available':
+      case 'Available':
         return 'Disponible';
 
-      case 'occupied':
+      case 'Occupied':
         return 'Ocupada';
 
-      case 'reserved':
+      case 'Reserved':
         return 'Reservada';
 
-      case 'disabled':
+      case 'Disabled':
         return 'Deshabilitada';
     }
   });
 
   readonly badgeClass = computed(() => {
     switch (this.status()) {
-      case 'available':
+      case 'Available':
         return 'bg-green-100 text-green-700';
 
-      case 'occupied':
+      case 'Occupied':
         return 'bg-red-100 text-red-700';
 
-      case 'reserved':
+      case 'Reserved':
         return 'bg-amber-100 text-amber-700';
 
-      case 'disabled':
+      case 'Disabled':
         return 'bg-slate-100 text-slate-600';
     }
   });

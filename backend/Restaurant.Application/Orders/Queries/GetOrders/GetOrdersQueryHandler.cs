@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Restaurant.Application.Orders.Mappings;
 using Restaurant.Application.Orders.Responses;
+using Restaurant.Domain.Entities;
 using Restaurant.Domain.Repositories;
 
 namespace Restaurant.Application.Orders.Queries.GetOrders;
@@ -22,14 +24,8 @@ public sealed class GetOrdersQueryHandler
             ? await _orderRepository.GetAllAsync(cancellationToken)
             : await _orderRepository.GetByStatusAsync(request.Status.Value, cancellationToken);
 
-        var items = orders.Select(x => new OrderResponse(
-            x.Id,
-            x.TableId,
-            x.Status,
-            x.OrderedAt,
-            x.ClosedAt,
-            x.Total)).ToList();
-
-        return items;
+        return orders
+            .Select(order => order.ToResponse())
+            .ToList();
     }
 }

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { CreateTableRequest } from '../models/create-table-request';
@@ -16,6 +16,11 @@ export class TablesApi {
 
   getAll(): Observable<RestaurantTable[]> {
     return this.http.get<RestaurantTable[]>(this.baseUrl);
+  }
+
+  getAvailable(): Observable<RestaurantTable[]> {
+    return this.http.get<RestaurantTable[]>(this.baseUrl)
+      .pipe(map(tables => tables.filter(table => table.status === 'Available')));
   }
 
   getById(id: number): Observable<RestaurantTable> {

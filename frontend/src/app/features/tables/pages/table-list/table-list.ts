@@ -82,7 +82,7 @@ export class TableList implements OnInit {
               currentTable.id === table.id
                 ? {
                     ...currentTable,
-                    status: 'available'
+                    status: 'Available'
                   }
                 : currentTable
             )
@@ -117,7 +117,7 @@ export class TableList implements OnInit {
               currentTable.id === table.id
                 ? {
                     ...currentTable,
-                    status: 'disabled'
+                    status: 'Disabled'
                   }
                 : currentTable
             )
@@ -176,23 +176,23 @@ export class TableList implements OnInit {
 
   canDelete(table: RestaurantTable): boolean {
     return (
-      table.status === 'available' ||
-      table.status === 'disabled'
+      table.status === 'Available' ||
+      table.status === 'Disabled'
     );
   }
 
   private getStatusLabel(table: RestaurantTable): string {
     switch (table.status) {
-      case 'available':
+      case 'Available':
         return 'disponible';
 
-      case 'occupied':
+      case 'Occupied':
         return 'ocupada';
 
-      case 'reserved':
+      case 'Reserved':
         return 'reservada';
 
-      case 'disabled':
+      case 'Disabled':
         return 'deshabilitada';
     }
   }

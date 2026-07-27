@@ -5,6 +5,7 @@ namespace Restaurant.Application.Orders.Responses;
 public sealed record OrderDetailsResponse(
     int Id,
     int TableId,
+    int TableNumber,
     OrderStatus Status,
     DateTime OrderedAt,
     DateTime? ClosedAt,

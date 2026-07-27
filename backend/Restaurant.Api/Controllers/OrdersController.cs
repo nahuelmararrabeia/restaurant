@@ -67,7 +67,7 @@ public sealed class OrdersController : ControllerBase
     }
 
     [HttpPost("{id:int}/items")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddItem(
@@ -77,9 +77,9 @@ public sealed class OrdersController : ControllerBase
     {
         command = command with { OrderId = id };
 
-        await _sender.Send(command, cancellationToken);
+        var response = await _sender.Send(command, cancellationToken);
 
-        return NoContent();
+        return Ok(response);
     }
 
     [HttpDelete("{id:int}/items/{orderItemId:int}")]

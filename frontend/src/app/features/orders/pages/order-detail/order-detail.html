@@ -1,0 +1,203 @@
+<section class="mx-auto max-w-6xl space-y-6">
+  <header>
+    <a
+      routerLink="/orders"
+      class="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900"
+    >
+      <span aria-hidden="true">←</span>
+      Volver a órdenes
+    </a>
+
+    @if (order(); as currentOrder) {
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Orden #{{ currentOrder.id }}
+          </p>
+
+          <h1 class="mt-1 text-2xl font-bold text-slate-900">
+            Mesa {{ currentOrder.tableNumber }}
+          </h1>
+
+          <p class="mt-1 text-sm text-slate-500">
+            Creada el
+            {{ currentOrder.orderedAt | date: 'dd/MM/yyyy HH:mm' }}
+          </p>
+        </div>
+
+        <order-status-badge [status]="currentOrder.status" />
+      </div>
+    } @else {
+      <h1 class="text-2xl font-bold text-slate-900">Detalle de la orden</h1>
+    }
+  </header>
+
+  @if (loading()) {
+    <div class="rounded-xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
+      <p class="text-sm text-slate-500">Cargando orden...</p>
+    </div>
+  } @else if (error()) {
+    <div role="alert" class="rounded-xl border border-red-200 bg-red-50 px-5 py-4">
+      <p class="text-sm font-medium text-red-700">
+        {{ error() }}
+      </p>
+
+      <button
+        type="button"
+        class="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+        (click)="loadOrder()"
+      >
+        Reintentar
+      </button>
+    </div>
+  } @else if (order(); as currentOrder) {
+    @if (actionError()) {
+      <div
+        role="alert"
+        class="flex items-start justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-5 py-4"
+      >
+        <p class="text-sm font-medium text-red-700">
+          {{ actionError() }}
+        </p>
+
+        <button
+          type="button"
+          aria-label="Cerrar mensaje"
+          class="text-lg font-bold text-red-500 transition hover:text-red-700"
+          (click)="clearActionError()"
+        >
+          ×
+        </button>
+      </div>
+    }
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+          <div>
+            <h2 class="font-semibold text-slate-900">Productos</h2>
+
+            <p class="mt-1 text-sm text-slate-500">
+              {{ totalUnits() }}
+              {{ totalUnits() === 1 ? 'unidad' : 'unidades' }}
+            </p>
+          </div>
+        </div>
+
+        @if (currentOrder.items.length === 0) {
+          <div class="px-6 py-14 text-center">
+            <div
+              class="mx-auto flex size-12 items-center justify-center rounded-full bg-slate-100 text-xl"
+              aria-hidden="true"
+            >
+              🍽️
+            </div>
+
+            <h3 class="mt-4 font-semibold text-slate-900">La orden está vacía</h3>
+
+            <p class="mt-1 text-sm text-slate-500">Todavía no se agregaron productos.</p>
+          </div>
+        } @else {
+          <div class="divide-y divide-slate-100">
+            @for (item of currentOrder.items; track item.id) {
+              <article
+                class="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div class="min-w-0">
+                  <h3 class="font-semibold text-slate-900">
+                    {{ item.productName }}
+                  </h3>
+
+                  <p class="mt-1 text-sm text-slate-500">
+                    {{ item.quantity }}
+                    ×
+                    {{ item.unitPrice | currency: 'ARS' : 'symbol-narrow' }}
+                  </p>
+
+                  @if (item.notes) {
+                    <p class="mt-2 text-sm italic text-slate-500">
+                      {{ item.notes }}
+                    </p>
+                  }
+                </div>
+
+                <p class="shrink-0 font-semibold text-slate-900">
+                  {{ item.subtotal | currency: 'ARS' : 'symbol-narrow' }}
+                </p>
+              </article>
+            }
+          </div>
+        }
+      </div>
+
+      <aside class="space-y-4">
+        @if (canEdit()) {
+          <div
+            class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+          >
+            <h2 class="font-semibold text-slate-900">
+              Agregar producto
+            </h2>
+
+            <p class="mt-1 text-sm text-slate-500">
+              Seleccioná un producto y la cantidad.
+            </p>
+
+            <div class="mt-5">
+              <app-add-order-item-form
+                [products]="products()"
+                [loading]="addingItem()"
+                [disabled]="!canEdit()"
+                (addItem)="addItem($event)"
+              />
+            </div>
+          </div>
+        } @else {
+          <div
+            class="rounded-xl border border-slate-200 bg-slate-50 p-5"
+          >
+            <p class="text-sm font-medium text-slate-600">
+              Esta orden ya no admite modificaciones.
+            </p>
+          </div>
+        }
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 class="font-semibold text-slate-900">Resumen</h2>
+
+          <dl class="mt-5 space-y-4">
+            <div class="flex items-center justify-between gap-4">
+              <dt class="text-sm text-slate-500">Mesa</dt>
+
+              <dd class="text-sm font-semibold text-slate-900">
+                {{ currentOrder.tableNumber }}
+              </dd>
+            </div>
+
+            <div class="flex items-center justify-between gap-4">
+              <dt class="text-sm text-slate-500">Productos</dt>
+
+              <dd class="text-sm font-semibold text-slate-900">
+                {{ totalUnits() }}
+              </dd>
+            </div>
+
+            <div class="flex items-center justify-between gap-4">
+              <dt class="text-sm text-slate-500">Estado</dt>
+
+              <dd>
+                <order-status-badge [status]="currentOrder.status" />
+              </dd>
+            </div>
+
+            <div class="flex items-center justify-between gap-4 border-t border-slate-200 pt-4">
+              <dt class="font-semibold text-slate-900">Total</dt>
+
+              <dd class="text-xl font-bold text-slate-900">
+                {{ currentOrder.total | currency: 'ARS' : 'symbol-narrow' }}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </aside>
+    </div>
+  }
+</section>

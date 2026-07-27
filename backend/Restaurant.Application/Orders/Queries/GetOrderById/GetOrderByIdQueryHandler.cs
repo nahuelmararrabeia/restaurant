@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Restaurant.Application.Common.Exceptions;
+using Restaurant.Application.Orders.Mappings;
 using Restaurant.Application.Orders.Responses;
 using Restaurant.Domain.Repositories;
 
@@ -19,28 +20,13 @@ public sealed class GetOrderByIdQueryHandler
         GetOrderByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var order = await _orderRepository.GetByIdWithDetailsAsync(
+        var order = await _orderRepository.GetByIdWithDetailsAsNoTrackingAsync(
             request.Id,
             cancellationToken);
 
         if (order is null)
             throw new NotFoundException($"Order {request.Id} was not found.");
 
-        var items = order.Items.Select(x => new OrderItemResponse(
-            x.Id,
-            x.ProductId,
-            x.Product?.Name ?? string.Empty,
-            x.Quantity,
-            x.UnitPrice,
-            x.SubTotal)).ToList();
-
-        return new OrderDetailsResponse(
-            order.Id,
-            order.TableId,
-            order.Status,
-            order.OrderedAt,
-            order.ClosedAt,
-            order.Total,
-            items);
+        return order.ToDetailsResponse();
     }
 }

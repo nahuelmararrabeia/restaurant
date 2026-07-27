@@ -23,6 +23,12 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/tables/tables.routes')
             .then(routes => routes.TABLES_ROUTES)
+      },
+      {
+        path: 'orders',
+        loadChildren: () =>
+          import('./features/orders/orders.routes')
+            .then(routes => routes.ORDERS_ROUTES)
       }
     ]
   },

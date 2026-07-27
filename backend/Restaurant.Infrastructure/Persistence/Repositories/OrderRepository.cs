@@ -47,6 +47,15 @@ public class OrderRepository : IOrderRepository
     public async Task<Order?> GetByIdWithDetailsAsync(int id, CancellationToken cancellationToken = default)
     {
         return await _context.Orders
+            .Include(x => x.Table)
+            .Include(x => x.Items)
+                .ThenInclude(x => x.Product)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task<Order?> GetByIdWithDetailsAsNoTrackingAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Orders
             .AsNoTracking()
             .Include(x => x.Table)
             .Include(x => x.Items)

@@ -1,11 +1,13 @@
 ﻿using MediatR;
 using Restaurant.Application.Common.Exceptions;
+using Restaurant.Application.Orders.Mappings;
+using Restaurant.Application.Orders.Responses;
 using Restaurant.Domain.Repositories;
 
 namespace Restaurant.Application.Orders.Commands.AddOrderItem;
 
 public sealed class AddOrderItemCommandHandler
-    : IRequestHandler<AddOrderItemCommand>
+    : IRequestHandler<AddOrderItemCommand, OrderDetailsResponse>
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
@@ -18,7 +20,7 @@ public sealed class AddOrderItemCommandHandler
         _productRepository = productRepository;
     }
 
-    public async Task Handle(
+    public async Task<OrderDetailsResponse> Handle(
         AddOrderItemCommand request,
         CancellationToken cancellationToken)
     {
@@ -42,5 +44,7 @@ public sealed class AddOrderItemCommandHandler
         order.AddItem(product.Id, request.Quantity, product.Price);
 
         await _orderRepository.SaveChangesAsync(cancellationToken);
+
+        return order.ToDetailsResponse();
     }
 }

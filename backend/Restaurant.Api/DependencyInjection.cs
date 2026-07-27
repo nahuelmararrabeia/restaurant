@@ -1,5 +1,6 @@
 ﻿using Restaurant.Api.Exceptions;
 using Restaurant.Api.Exceptions.Strategies;
+using System.Text.Json.Serialization;
 
 namespace Restaurant.Api;
 
@@ -26,7 +27,13 @@ public static class DependencyInjection
 
         services.AddSingleton<ExceptionStrategyResolver>();
 
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(
+                    new JsonStringEnumConverter()
+                );
+            });
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();

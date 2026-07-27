@@ -1,0 +1,219 @@
+<section class="mx-auto max-w-5xl space-y-6">
+  <header
+    class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+  >
+    <div>
+      <a
+        routerLink="/orders"
+        class="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900"
+      >
+        <span aria-hidden="true">←</span>
+        Volver a órdenes
+      </a>
+
+      <h1 class="text-2xl font-bold text-slate-900">
+        Nueva orden
+      </h1>
+
+      <p class="mt-1 text-sm text-slate-500">
+        Seleccioná una mesa disponible para comenzar el pedido.
+      </p>
+    </div>
+  </header>
+
+  @if (loadError()) {
+    <div
+      role="alert"
+      class="rounded-xl border border-red-200 bg-red-50 px-5 py-4"
+    >
+      <p class="text-sm font-medium text-red-700">
+        {{ loadError() }}
+      </p>
+
+      <button
+        type="button"
+        class="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+        (click)="loadTables()"
+      >
+        Reintentar
+      </button>
+    </div>
+  }
+
+  @if (createError()) {
+    <div
+      role="alert"
+      class="flex items-start justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-5 py-4"
+    >
+      <p class="text-sm font-medium text-red-700">
+        {{ createError() }}
+      </p>
+
+      <button
+        type="button"
+        aria-label="Cerrar mensaje"
+        class="text-lg font-bold text-red-500 transition hover:text-red-700"
+        (click)="createError.set(null)"
+      >
+        ×
+      </button>
+    </div>
+  }
+
+  @if (loading()) {
+    <div
+      class="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm"
+    >
+      <p class="text-sm text-slate-500">
+        Cargando mesas disponibles...
+      </p>
+    </div>
+  } @else if (!loadError() && tables().length === 0) {
+    <div
+      class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center"
+    >
+      <div
+        class="mx-auto flex size-12 items-center justify-center rounded-full bg-slate-100 text-xl"
+        aria-hidden="true"
+      >
+        🪑
+      </div>
+
+      <h2 class="mt-4 text-base font-semibold text-slate-900">
+        No hay mesas disponibles
+      </h2>
+
+      <p class="mt-1 text-sm text-slate-500">
+        Todas las mesas están ocupadas, reservadas o deshabilitadas.
+      </p>
+
+      <div class="mt-5 flex flex-wrap justify-center gap-3">
+        <button
+          type="button"
+          class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+          (click)="loadTables()"
+        >
+          Actualizar
+        </button>
+
+        <a
+          routerLink="/orders"
+          class="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
+        >
+          Volver a órdenes
+        </a>
+      </div>
+    </div>
+  } @else if (!loadError()) {
+    <div>
+      <h2 class="text-base font-semibold text-slate-900">
+        Mesas disponibles
+      </h2>
+
+      <p class="mt-1 text-sm text-slate-500">
+        Elegí la mesa que querés asignar a la nueva orden.
+      </p>
+
+      <div
+        class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      >
+        @for (table of tables(); track table.id) {
+          <button
+            type="button"
+            class="relative rounded-xl border bg-white p-5 text-left shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60"
+            [class.border-slate-200]="!isSelected(table.id)"
+            [class.hover:border-slate-400]="!isSelected(table.id)"
+            [class.hover:shadow-md]="!isSelected(table.id)"
+            [class.border-slate-900]="isSelected(table.id)"
+            [class.ring-2]="isSelected(table.id)"
+            [class.ring-slate-900]="isSelected(table.id)"
+            [class.ring-offset-2]="isSelected(table.id)"
+            [disabled]="creating()"
+            (click)="selectTable(table)"
+          >
+            @if (isSelected(table.id)) {
+              <span
+                class="absolute right-3 top-3 flex size-6 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white"
+                aria-hidden="true"
+              >
+                ✓
+              </span>
+            }
+
+            <p
+              class="text-xs font-semibold uppercase tracking-wide text-slate-400"
+            >
+              Mesa
+            </p>
+
+            <p class="mt-1 text-2xl font-bold text-slate-900">
+              {{ table.number }}
+            </p>
+
+            <div class="mt-5">
+              <p class="text-xs font-medium text-slate-400">
+                Capacidad
+              </p>
+
+              <p class="mt-1 text-sm font-semibold text-slate-700">
+                {{ table.capacity }}
+                {{ table.capacity === 1 ? 'persona' : 'personas' }}
+              </p>
+            </div>
+
+            <div class="mt-4">
+              <span
+                class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-1 text-xs font-semibold text-green-700 ring-1 ring-inset ring-green-200"
+              >
+                Disponible
+              </span>
+            </div>
+          </button>
+        }
+      </div>
+    </div>
+
+    <footer
+      class="sticky bottom-4 rounded-xl border border-slate-200 bg-white/95 p-4 shadow-lg backdrop-blur"
+    >
+      <div
+        class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div>
+          @if (selectedTable(); as table) {
+            <p class="text-sm font-semibold text-slate-900">
+                Mesa seleccionada: {{ table.number }}
+            </p>
+
+            <p class="mt-1 text-xs text-slate-500">
+                Capacidad para
+                {{ table.capacity }}
+                {{ table.capacity === 1 ? 'persona' : 'personas' }}.
+            </p>
+            } @else {
+            <p class="text-sm font-semibold text-slate-900">
+                Seleccioná una mesa
+            </p>
+
+            <p class="mt-1 text-xs text-slate-500">
+                Al continuar se creará una orden en estado borrador.
+            </p>
+            }
+        </div>
+
+        <button
+          type="button"
+          class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="selectedTableId() === null || creating()"
+          (click)="createOrder()"
+        >
+          @if (creating()) {
+            Creando orden...
+          } @else {
+            Crear orden
+          }
+        </button>
+      </div>
+    </footer>
+  }
+</section>
