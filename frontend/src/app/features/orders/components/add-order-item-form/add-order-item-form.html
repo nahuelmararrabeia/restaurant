@@ -8,7 +8,7 @@
       for="productId"
       class="block text-sm font-semibold text-slate-700"
     >
-      Producto
+      Product
     </label>
 
     <select
@@ -17,7 +17,7 @@
       class="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:cursor-not-allowed disabled:bg-slate-100"
     >
       <option [ngValue]="null">
-        Seleccioná un producto
+        Select a product
       </option>
 
       @for (product of products(); track product.id) {
@@ -32,7 +32,7 @@
       form.controls.productId.hasError('required')
     ) {
       <p class="mt-1 text-sm text-red-600">
-        Seleccioná un producto.
+        Select a product.
       </p>
     }
   </div>
@@ -42,7 +42,7 @@
       for="quantity"
       class="block text-sm font-semibold text-slate-700"
     >
-      Cantidad
+      Quantity
     </label>
 
     <input
@@ -59,7 +59,7 @@
       form.controls.quantity.invalid
     ) {
       <p class="mt-1 text-sm text-red-600">
-        La cantidad debe ser mayor o igual a 1.
+        Quantity must be greater than or equal to 1.
       </p>
     }
   </div>
@@ -69,9 +69,9 @@
       for="notes"
       class="block text-sm font-semibold text-slate-700"
     >
-      Notas
+      Notes
       <span class="font-normal text-slate-400">
-        (opcional)
+        (optional)
       </span>
     </label>
 
@@ -80,7 +80,7 @@
       rows="3"
       maxlength="250"
       formControlName="notes"
-      placeholder="Ej.: sin cebolla, punto de cocción medio..."
+      placeholder="E.g. no onions, medium doneness..."
       class="mt-2 block w-full resize-none rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:cursor-not-allowed disabled:bg-slate-100"
     ></textarea>
 
@@ -89,7 +89,7 @@
       form.controls.notes.hasError('maxlength')
     ) {
       <p class="mt-1 text-sm text-red-600">
-        Las notas no pueden superar los 250 caracteres.
+        Notes cannot exceed 250 characters.
       </p>
     }
   </div>
@@ -100,9 +100,9 @@
     [disabled]="form.invalid || loading() || disabled()"
   >
     @if (loading()) {
-      Agregando...
+      Adding...
     } @else {
-      Agregar producto
+      Add product
     }
   </button>
 </form>

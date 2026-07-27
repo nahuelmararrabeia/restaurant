@@ -8,7 +8,7 @@
 
     <p class="mt-1 text-sm text-slate-500">
       {{ item().unitPrice | currency: 'EUR' : 'symbol' }}
-      por unidad
+      per unit
     </p>
 
     @if (item().notes) {
@@ -60,16 +60,16 @@
           (click)="remove.emit()"
         >
           @if (runningAction() === 'remove') {
-            Eliminando...
+            Removing...
           } @else {
-            Eliminar
+            Remove
           }
         </button>
       </div>
     } @else {
       <p class="text-sm text-slate-500">
         {{ item().quantity }}
-        {{ item().quantity === 1 ? 'unidad' : 'unidades' }}
+        {{ item().quantity === 1 ? 'unit' : 'units' }}
       </p>
     }
   </div>

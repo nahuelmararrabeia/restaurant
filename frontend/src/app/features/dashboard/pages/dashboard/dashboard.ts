@@ -122,7 +122,7 @@ export class Dashboard implements OnInit {
         },
         error: () => {
           this.error.set(
-            'No se pudo cargar la información del dashboard.'
+            'The dashboard information could not be loaded.'
           );
         }
       });

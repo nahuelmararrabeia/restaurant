@@ -105,7 +105,7 @@ export class OrderDetail implements OnInit {
 
     if (
       item &&
-      window.confirm(`¿Eliminar "${item.productName}" de la orden?`)
+      window.confirm(`Remove "${item.productName}" from the order?`)
     ) {
       this.ordersService.removeItem(itemId);
     }
@@ -114,7 +114,7 @@ export class OrderDetail implements OnInit {
   performOrderAction(action: OrderAction): void {
     if (
       action !== 'cancel' ||
-      window.confirm('¿Confirmás que querés cancelar esta orden?')
+      window.confirm('Are you sure you want to cancel this order?')
     ) {
       this.ordersService.performOrderAction(action);
     }

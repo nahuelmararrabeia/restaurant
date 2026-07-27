@@ -8,7 +8,7 @@
       for="number"
       class="block text-sm font-medium text-slate-700"
     >
-      Número de mesa
+      Table number
       <span class="text-red-500">*</span>
     </label>
 
@@ -28,13 +28,13 @@
 
     @if (hasError('number', 'required')) {
       <p class="mt-1.5 text-sm text-red-600">
-        El número de mesa es obligatorio.
+        The table number is required.
       </p>
     }
 
     @if (hasError('number', 'min')) {
       <p class="mt-1.5 text-sm text-red-600">
-        El número de mesa debe ser mayor que cero.
+        The table number must be greater than zero.
       </p>
     }
   </div>
@@ -44,7 +44,7 @@
       for="capacity"
       class="block text-sm font-medium text-slate-700"
     >
-      Capacidad
+      Capacity
       <span class="text-red-500">*</span>
     </label>
 
@@ -65,24 +65,24 @@
     />
 
     <p class="mt-1.5 text-xs text-slate-500">
-      Cantidad máxima de personas que puede ocupar la mesa.
+      Maximum number of people who can occupy the table.
     </p>
 
     @if (hasError('capacity', 'required')) {
       <p class="mt-1.5 text-sm text-red-600">
-        La capacidad es obligatoria.
+        Capacity is required.
       </p>
     }
 
     @if (hasError('capacity', 'min')) {
       <p class="mt-1.5 text-sm text-red-600">
-        La capacidad debe ser de al menos una persona.
+        Capacity must be at least one person.
       </p>
     }
 
     @if (hasError('capacity', 'max')) {
       <p class="mt-1.5 text-sm text-red-600">
-        La capacidad no puede superar las 50 personas.
+        Capacity cannot exceed 50 people.
       </p>
     }
   </div>
@@ -96,7 +96,7 @@
       [disabled]="loading()"
       (click)="cancelForm()"
     >
-      Cancelar
+      Cancel
     </button>
 
     <button
@@ -105,9 +105,9 @@
       [disabled]="loading()"
     >
       @if (loading()) {
-        Guardando...
+        Saving...
       } @else {
-        Guardar mesa
+        Save table
       }
     </button>
   </div>

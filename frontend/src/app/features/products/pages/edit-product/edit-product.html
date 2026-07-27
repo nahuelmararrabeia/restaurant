@@ -7,7 +7,7 @@
   />
 
   @if (loading()) {
-    <loading-state text="Cargando producto..." />
+    <loading-state text="Loading product..." />
   } @else if (loadError()) {
     <error-state 
       [text]="loadError()"

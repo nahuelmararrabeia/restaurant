@@ -19,22 +19,22 @@ export class OrderStatusBadge {
   readonly label = computed(() => {
     switch (this.status()) {
       case 'Pending':
-        return 'Borrador';
+        return 'Draft';
 
       case 'Preparing':
-        return 'En preparación';
+        return 'Preparing';
 
       case 'Ready':
-        return 'Lista';
+        return 'Ready';
 
       case 'Delivered':
-        return 'Servida';
+        return 'Delivered';
 
       case 'Paid':
-        return 'Pagada';
+        return 'Paid';
 
       case 'Cancelled':
-        return 'Cancelada';
+        return 'Cancelled';
     }
   });
 

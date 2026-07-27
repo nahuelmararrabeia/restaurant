@@ -84,7 +84,7 @@ export class OrdersService {
   }
 
   setInvalidOrderIdError(): void {
-    this.error.set('El identificador de la orden no es válido.');
+    this.error.set('The order ID is invalid.');
   }
 
   loadOrder(): void {
@@ -110,7 +110,7 @@ export class OrdersService {
         },
         error: () => {
           this.error.set(
-            'No se pudo cargar la información de la orden.'
+            'The order information could not be loaded.'
           );
         }
       });
@@ -145,7 +145,7 @@ export class OrdersService {
         error: (error: HttpErrorResponse) => {
           if (error.status === 409) {
             this.actionError.set(
-              'La orden ya no puede modificarse porque cambió de estado.'
+              'The order can no longer be modified because its status changed.'
             );
             this.loadOrder();
             return;
@@ -153,13 +153,13 @@ export class OrdersService {
 
           if (error.status === 404) {
             this.actionError.set(
-              'La orden o el producto seleccionado ya no existe.'
+              'The order or selected product no longer exists.'
             );
             return;
           }
 
           this.actionError.set(
-            'No se pudo agregar el producto. Intentá nuevamente.'
+            'The product could not be added. Please try again.'
           );
         }
       });
@@ -292,19 +292,19 @@ export class OrdersService {
 
   private handleItemActionError(error: HttpErrorResponse): void {
     if (error.status === 404) {
-      this.actionError.set('La orden o el producto ya no existe.');
+      this.actionError.set('The order or product no longer exists.');
       return;
     }
 
     if (error.status === 409) {
       this.actionError.set(
-        'La orden cambió de estado y ya no puede modificarse.'
+        'The order status changed and it can no longer be modified.'
       );
       return;
     }
 
     this.actionError.set(
-      'No se pudo actualizar la orden. Intentá nuevamente.'
+      'The order could not be updated. Please try again.'
     );
   }
 
@@ -340,20 +340,20 @@ export class OrdersService {
 
   private handleOrderActionError(error: HttpErrorResponse): void {
     if (error.status === 404) {
-      this.actionError.set('La orden ya no existe.');
+      this.actionError.set('The order no longer exists.');
       return;
     }
 
     if (error.status === 409) {
       this.actionError.set(
-        'La orden cambió de estado y esta acción ya no está permitida.'
+        'The order status changed and this action is no longer allowed.'
       );
       this.reloadOrder();
       return;
     }
 
     this.actionError.set(
-      'No se pudo actualizar el estado de la orden. Intentá nuevamente.'
+      'The order status could not be updated. Please try again.'
     );
   }
 
@@ -369,7 +369,7 @@ export class OrdersService {
         next: order => this.order.set(order),
         error: () => {
           this.actionError.set(
-            'No se pudo volver a cargar la orden.'
+            'The order could not be reloaded.'
           );
         }
       });

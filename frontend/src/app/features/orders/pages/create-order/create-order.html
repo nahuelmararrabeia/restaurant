@@ -23,7 +23,7 @@
   }
 
   @if (loading()) {
-    <loading-state text="Cargando mesas disponibles..." />
+    <loading-state text="Loading available tables..." />
   } @else if (!loadError() && tables().length === 0) {
     <div
       class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center"
@@ -36,11 +36,11 @@
       </div>
 
       <h2 class="mt-4 text-base font-semibold text-slate-900">
-        No hay mesas disponibles
+        No tables available
       </h2>
 
       <p class="mt-1 text-sm text-slate-500">
-        Todas las mesas están ocupadas, reservadas o deshabilitadas.
+        All tables are occupied, reserved, or disabled.
       </p>
 
       <div class="mt-5 flex flex-wrap justify-center gap-3">
@@ -49,25 +49,25 @@
           class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
           (click)="loadTables()"
         >
-          Actualizar
+          Refresh
         </button>
 
         <a
           routerLink="/orders"
           class="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
         >
-          Volver a órdenes
+          Back to orders
         </a>
       </div>
     </div>
   } @else if (!loadError()) {
     <div>
       <h2 class="text-base font-semibold text-slate-900">
-        Mesas disponibles
+        Available tables
       </h2>
 
       <p class="mt-1 text-sm text-slate-500">
-        Elegí la mesa que querés asignar a la nueva orden.
+        Choose the table you want to assign to the new order.
       </p>
 
       <div
@@ -99,7 +99,7 @@
             <p
               class="text-xs font-semibold uppercase tracking-wide text-slate-400"
             >
-              Mesa
+              Table
             </p>
 
             <p class="mt-1 text-2xl font-bold text-slate-900">
@@ -108,12 +108,12 @@
 
             <div class="mt-5">
               <p class="text-xs font-medium text-slate-400">
-                Capacidad
+                Capacity
               </p>
 
               <p class="mt-1 text-sm font-semibold text-slate-700">
                 {{ table.capacity }}
-                {{ table.capacity === 1 ? 'persona' : 'personas' }}
+                {{ table.capacity === 1 ? 'person' : 'people' }}
               </p>
             </div>
 
@@ -121,7 +121,7 @@
               <span
                 class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-1 text-xs font-semibold text-green-700 ring-1 ring-inset ring-green-200"
               >
-                Disponible
+                Available
               </span>
             </div>
           </button>
@@ -138,21 +138,21 @@
         <div>
           @if (selectedTable(); as table) {
             <p class="text-sm font-semibold text-slate-900">
-                Mesa seleccionada: {{ table.number }}
+                Selected table: {{ table.number }}
             </p>
 
             <p class="mt-1 text-xs text-slate-500">
-                Capacidad para
+                Capacity for
                 {{ table.capacity }}
-                {{ table.capacity === 1 ? 'persona' : 'personas' }}.
+                {{ table.capacity === 1 ? 'person' : 'people' }}.
             </p>
             } @else {
             <p class="text-sm font-semibold text-slate-900">
-                Seleccioná una mesa
+                Select a table
             </p>
 
             <p class="mt-1 text-xs text-slate-500">
-                Al continuar se creará una orden en estado borrador.
+                Continuing will create an order with draft status.
             </p>
             }
         </div>
@@ -164,9 +164,9 @@
           (click)="createOrder()"
         >
           @if (creating()) {
-            Creando orden...
+            Creating order...
           } @else {
-            Crear orden
+            Create order
           }
         </button>
       </div>

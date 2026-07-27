@@ -50,7 +50,7 @@ export class CreateTable {
         },
         error: () => {
           this.error.set(
-            'No se pudo crear la mesa. Intentá nuevamente.'
+            'The table could not be created. Please try again.'
           );
         }
       });

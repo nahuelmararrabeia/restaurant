@@ -48,7 +48,7 @@ export class CreateProduct {
         },
         error: () => {
           this.error.set(
-            'No se pudo crear el producto. Intentá nuevamente.'
+            'The product could not be created. Please try again.'
           );
         }
       });

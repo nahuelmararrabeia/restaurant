@@ -1,13 +1,13 @@
 <section class="mx-auto max-w-6xl space-y-6">
   @if (order(); as currentOrder) {
     <subsection-header
-      [eyebrow]="'Orden #' + currentOrder.id"
-      [title]="'Mesa ' + currentOrder.tableNumber"
+      [eyebrow]="'Order #' + currentOrder.id"
+      [title]="'Table ' + currentOrder.tableNumber"
       [subtitle]="
-        'Creada el ' +
+        'Created on ' +
         (currentOrder.orderedAt | date: 'dd/MM/yyyy HH:mm')
       "
-      backButtonText="Volver a órdenes"
+      backButtonText="Back to orders"
       (onBackButtonClick)="goBack()"
     >
       <order-status-badge
@@ -17,9 +17,9 @@
     </subsection-header>
   } @else {
     <subsection-header
-      title="Detalle de la orden"
-      subtitle="Consultá la información de la orden."
-      backButtonText="Volver a órdenes"
+      title="Order details"
+      subtitle="View the order information."
+      backButtonText="Back to orders"
       (onBackButtonClick)="goBack()"
     />
   }
@@ -49,19 +49,19 @@
           class="flex items-center justify-between border-b border-slate-200 px-5 py-4"
         >
           <div>
-            <h2 class="font-semibold text-slate-900">Productos</h2>
+            <h2 class="font-semibold text-slate-900">Products</h2>
 
             <p class="mt-1 text-sm text-slate-500">
               {{ totalUnits() }}
-              {{ totalUnits() === 1 ? 'unidad' : 'unidades' }}
+              {{ totalUnits() === 1 ? 'unit' : 'units' }}
             </p>
           </div>
         </div>
 
         @if (currentOrder.items.length === 0) {
           <empty-state
-            title="La orden está vacía"
-            subtitle="Todavía no se agregaron productos."
+            title="The order is empty"
+            subtitle="No products have been added yet."
             icon="🍽️"
             [compact]="true"
           />
@@ -107,11 +107,11 @@
             class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
           >
             <h2 class="font-semibold text-slate-900">
-              Agregar producto
+              Add product
             </h2>
 
             <p class="mt-1 text-sm text-slate-500">
-              Seleccioná un producto y la cantidad.
+              Select a product and quantity.
             </p>
 
             <div class="mt-5">
@@ -128,7 +128,7 @@
             class="rounded-xl border border-slate-200 bg-slate-50 p-5"
           >
             <p class="text-sm font-medium text-slate-600">
-              Esta orden ya no admite modificaciones.
+              This order can no longer be modified.
             </p>
           </div>
         }

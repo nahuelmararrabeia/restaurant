@@ -71,12 +71,12 @@ export class EditTable implements OnInit {
         error: (error: HttpErrorResponse) => {
           if (error.status === 409) {
             this.saveError.set(
-              'Ya existe otra mesa con ese número.'
+              'Another table with that number already exists.'
             );
             return;
           }
           this.saveError.set(
-            'No se pudo actualizar la mesa. Intentá nuevamente.'
+            'The table could not be updated. Please try again.'
           );
         }
       });
@@ -105,7 +105,7 @@ export class EditTable implements OnInit {
       id <= 0
     ) {
       this.loadError.set(
-        'El identificador de la mesa no es válido.'
+        'The table ID is invalid.'
       );
       this.loading.set(false);
       return;
@@ -125,7 +125,7 @@ export class EditTable implements OnInit {
         },
         error: () => {
           this.loadError.set(
-            'No se pudo cargar la mesa.'
+            'The table could not be loaded.'
           );
         }
       });

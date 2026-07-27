@@ -81,7 +81,7 @@ export class CreateOrder implements OnInit {
         },
         error: () => {
           this.loadError.set(
-            'No se pudieron cargar las mesas disponibles.'
+            'The available tables could not be loaded.'
           );
         }
       });
@@ -136,14 +136,14 @@ export class CreateOrder implements OnInit {
             this.selectedTableId.set(null);
 
             this.createError.set(
-              'La mesa seleccionada ya no está disponible. Elegí otra mesa.'
+              'The selected table is no longer available. Choose another table.'
             );
 
             return;
           }
 
           this.createError.set(
-            'No se pudo crear la orden. Intentá nuevamente.'
+            'The order could not be created. Please try again.'
           );
         }
       });

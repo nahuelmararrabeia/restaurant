@@ -63,7 +63,7 @@ export class OrderList implements OnInit {
         },
         error: () => {
           this.error.set(
-            'No se pudieron cargar las órdenes activas.'
+            'The active orders could not be loaded.'
           );
         }
       });

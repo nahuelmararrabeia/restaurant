@@ -72,7 +72,7 @@ export class EditProduct implements OnInit {
         },
         error: () => {
           this.saveError.set(
-            'No se pudo actualizar el producto. Intentá nuevamente.'
+            'The product could not be updated. Please try again.'
           );
         }
       });
@@ -101,7 +101,7 @@ export class EditProduct implements OnInit {
       id <= 0
     ) {
       this.loadError.set(
-        'El identificador del producto no es válido.'
+        'The product ID is invalid.'
       );
       this.loading.set(false);
       return;
@@ -121,7 +121,7 @@ export class EditProduct implements OnInit {
         },
         error: () => {
           this.loadError.set(
-            'No se pudo cargar el producto.'
+            'The product could not be loaded.'
           );
         }
       });

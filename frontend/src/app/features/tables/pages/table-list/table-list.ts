@@ -63,7 +63,7 @@ export class TableList implements OnInit {
         },
         error: () => {
           this.error.set(
-            'No se pudieron cargar las mesas.'
+            'The tables could not be loaded.'
           );
         }
       });
@@ -98,7 +98,7 @@ export class TableList implements OnInit {
         },
         error: () => {
           this.actionError.set(
-            `No se pudo habilitar la mesa ${table.number}.`
+            `Table ${table.number} could not be enabled.`
           );
         }
       });
@@ -133,7 +133,7 @@ export class TableList implements OnInit {
         },
         error: () => {
           this.actionError.set(
-            `No se pudo deshabilitar la mesa ${table.number}.`
+            `Table ${table.number} could not be disabled.`
           );
         }
       });
@@ -146,13 +146,13 @@ export class TableList implements OnInit {
 
     if (!this.canDelete(table)) {
       this.actionError.set(
-        `La mesa ${table.number} no puede eliminarse mientras está ${this.getStatusLabel(table)}.`
+        `Table ${table.number} cannot be deleted while it is ${this.getStatusLabel(table)}.`
       );
       return;
     }
 
     const confirmed = window.confirm(
-      `¿Seguro que querés eliminar la mesa ${table.number}? Esta acción no se puede deshacer.`
+      `Are you sure you want to delete table ${table.number}? This action cannot be undone.`
     );
 
     if (!confirmed) {
@@ -176,7 +176,7 @@ export class TableList implements OnInit {
         },
         error: () => {
           this.actionError.set(
-            `No se pudo eliminar la mesa ${table.number}.`
+            `Table ${table.number} could not be deleted.`
           );
         }
       });
@@ -192,16 +192,16 @@ export class TableList implements OnInit {
   private getStatusLabel(table: RestaurantTable): string {
     switch (table.status) {
       case 'Available':
-        return 'disponible';
+        return 'available';
 
       case 'Occupied':
-        return 'ocupada';
+        return 'occupied';
 
       case 'Reserved':
-        return 'reservada';
+        return 'reserved';
 
       case 'Disabled':
-        return 'deshabilitada';
+        return 'disabled';
     }
   }
 

@@ -16,7 +16,7 @@
   }
 
   @if (loading()) {
-    <loading-state text="Cargando mesas..." />
+    <loading-state text="Loading tables..." />
   } @else if (error()) {
     <error-state
       [text]="error()"

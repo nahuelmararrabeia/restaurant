@@ -3,7 +3,7 @@
 >
   <div class="flex items-start justify-between gap-4">
     <div>
-      <p class="text-sm font-medium text-slate-500">Mesa</p>
+      <p class="text-sm font-medium text-slate-500">Table</p>
 
       <h2 class="mt-1 text-2xl font-bold text-slate-900">
         {{ table().number }}
@@ -14,11 +14,11 @@
   </div>
 
   <div class="mt-6 border-t border-slate-100 pt-4">
-    <p class="text-sm text-slate-500">Capacidad</p>
+    <p class="text-sm text-slate-500">Capacity</p>
 
     <p class="mt-1 font-semibold text-slate-900">
       {{ table().capacity }}
-      {{ table().capacity === 1 ? 'persona' : 'personas' }}
+      {{ table().capacity === 1 ? 'person' : 'people' }}
     </p>
   </div>
 
@@ -29,7 +29,7 @@
       [class.pointer-events-none]="isActionInProgress()"
       [class.opacity-50]="isActionInProgress()"
     >
-      Editar
+      Edit
     </a>
 
     @if (table().status === 'Disabled') {
@@ -40,9 +40,9 @@
         (click)="onClickEnable.emit()"
       >
         @if (isActionInProgress()) {
-          Habilitando...
+          Enabling...
         } @else {
-          Habilitar
+          Enable
         }
       </button>
     } @else {
@@ -53,9 +53,9 @@
         (click)="onClickDisable.emit()"
       >
         @if (isActionInProgress()) {
-          Deshabilitando...
+          Disabling...
         } @else {
-          Deshabilitar
+          Disable
         }
       </button>
     }
@@ -67,9 +67,9 @@
         (click)="onClickDelete.emit()"
       >
         @if (isActionInProgress()) {
-          Eliminando...
+          Deleting...
         } @else {
-          Eliminar
+          Delete
         }
       </button>
     }

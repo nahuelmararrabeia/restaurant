@@ -7,7 +7,7 @@
   />
 
   @if (loading()) {
-    <loading-state text="Cargando órdenes..."/>
+    <loading-state text="Loading orders..."/>
   } @else if (error()) {
     <error-state
       [text]="error()"

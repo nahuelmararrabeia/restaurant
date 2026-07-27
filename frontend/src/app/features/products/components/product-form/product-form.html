@@ -8,7 +8,7 @@
       for="name"
       class="block text-sm font-medium text-slate-700"
     >
-      Nombre
+      Name
       <span class="text-red-500">*</span>
     </label>
 
@@ -17,7 +17,7 @@
       type="text"
       formControlName="name"
       autocomplete="off"
-      placeholder="Ej. Hamburguesa completa"
+      placeholder="E.g. Deluxe burger"
       class="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-100"
       [class.border-red-400]="
         hasError('name', 'required') ||
@@ -27,13 +27,13 @@
 
     @if (hasError('name', 'required')) {
       <p class="mt-1.5 text-sm text-red-600">
-        El nombre es obligatorio.
+        Name is required.
       </p>
     }
 
     @if (hasError('name', 'maxlength')) {
       <p class="mt-1.5 text-sm text-red-600">
-        El nombre no puede superar los 100 caracteres.
+        Name cannot exceed 100 characters.
       </p>
     }
   </div>
@@ -44,7 +44,7 @@
         for="description"
         class="block text-sm font-medium text-slate-700"
       >
-        Descripción
+        Description
       </label>
 
       <span class="text-xs text-slate-400">
@@ -56,7 +56,7 @@
       id="description"
       rows="4"
       formControlName="description"
-      placeholder="Agregá una descripción del producto"
+      placeholder="Add a product description"
       class="mt-2 block w-full resize-y rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-100"
       [class.border-red-400]="
         hasError('description', 'maxlength')
@@ -65,7 +65,7 @@
 
     @if (hasError('description', 'maxlength')) {
       <p class="mt-1.5 text-sm text-red-600">
-        La descripción no puede superar los 500 caracteres.
+        Description cannot exceed 500 characters.
       </p>
     }
   </div>
@@ -75,7 +75,7 @@
       for="price"
       class="block text-sm font-medium text-slate-700"
     >
-      Precio
+      Price
       <span class="text-red-500">*</span>
     </label>
 
@@ -103,13 +103,13 @@
 
     @if (hasError('price', 'required')) {
       <p class="mt-1.5 text-sm text-red-600">
-        El precio es obligatorio.
+        Price is required.
       </p>
     }
 
     @if (hasError('price', 'min')) {
       <p class="mt-1.5 text-sm text-red-600">
-        El precio debe ser mayor que cero.
+        Price must be greater than zero.
       </p>
     }
   </div>
@@ -123,7 +123,7 @@
       [disabled]="loading()"
       (click)="cancelForm()"
     >
-      Cancelar
+      Cancel
     </button>
 
     <button
@@ -132,9 +132,9 @@
       [disabled]="loading()"
     >
       @if (loading()) {
-        Guardando...
+        Saving...
       } @else {
-        Guardar producto
+        Save product
       }
     </button>
   </div>

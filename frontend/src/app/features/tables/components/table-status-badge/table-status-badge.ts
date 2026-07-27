@@ -19,16 +19,16 @@ export class TableStatusBadge {
   readonly label = computed(() => {
     switch (this.status()) {
       case 'Available':
-        return 'Disponible';
+        return 'Available';
 
       case 'Occupied':
-        return 'Ocupada';
+        return 'Occupied';
 
       case 'Reserved':
-        return 'Reservada';
+        return 'Reserved';
 
       case 'Disabled':
-        return 'Deshabilitada';
+        return 'Disabled';
     }
   });
 
