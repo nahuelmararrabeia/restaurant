@@ -23,6 +23,13 @@ import { ProductsApi } from '../../../products/services/products-api';
 import { OrderItemFormValue } from '../../models/order-item-form-value';
 import { HttpErrorResponse } from '@angular/common/http';
 
+type OrderItemAction = 'update' | 'remove';
+
+interface OrderItemActionState {
+  itemId: number;
+  action: OrderItemAction;
+}
+
 @Component({
   selector: 'app-order-detail',
   standalone: true,
@@ -52,6 +59,7 @@ export class OrderDetail implements OnInit {
 
   readonly addingItem = signal(false);
   readonly actionError = signal<string | null>(null);
+  readonly itemAction = signal<OrderItemActionState | null>(null);
 
   readonly totalUnits = computed(() => {
     const order = this.order();
@@ -168,7 +176,155 @@ export class OrderDetail implements OnInit {
       });
   }
 
+  changeItemQuantity(
+    itemId: number,
+    currentQuantity: number,
+    delta: number
+  ): void {
+    const quantity = currentQuantity + delta;
+
+    if (quantity < 1) {
+      return;
+    }
+
+    this.updateItem(itemId, quantity);
+  }
+
+  removeItem(itemId: number): void {
+    if (
+      this.orderId === null ||
+      !this.canEdit() ||
+      this.itemAction() !== null
+    ) {
+      return;
+    }
+
+    const item = this.order()
+      ?.items
+      .find(current => current.id === itemId);
+
+    if (!item) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `¿Eliminar "${item.productName}" de la orden?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.itemAction.set({
+      itemId,
+      action: 'remove'
+    });
+
+    this.actionError.set(null);
+
+    this.ordersApi
+      .removeItem(this.orderId, itemId)
+      .pipe(
+        finalize(() => this.itemAction.set(null)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: order => {
+          this.order.set(order);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.handleItemActionError(error);
+        }
+      });
+  }
+
+  isItemBusy(itemId: number): boolean {
+    return this.itemAction()?.itemId === itemId;
+  }
+
+  isItemActionRunning(
+    itemId: number,
+    action: OrderItemAction
+  ): boolean {
+    const current = this.itemAction();
+
+    return current?.itemId === itemId &&
+      current.action === action;
+  }
+
   clearActionError(): void {
     this.actionError.set(null);
+  }
+
+  private updateItem(
+    itemId: number,
+    quantity: number
+  ): void {
+    if (
+      this.orderId === null ||
+      !this.canEdit() ||
+      this.itemAction() !== null
+    ) {
+      return;
+    }
+
+    const currentItem = this.order()
+      ?.items
+      .find(item => item.id === itemId);
+
+    if (!currentItem) {
+      return;
+    }
+
+    this.itemAction.set({
+      itemId,
+      action: 'update'
+    });
+
+    this.actionError.set(null);
+
+    this.ordersApi
+      .updateItem(
+        this.orderId,
+        itemId,
+        {
+          quantity,
+          notes: currentItem.notes
+        }
+      )
+      .pipe(
+        finalize(() => this.itemAction.set(null)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: order => {
+          this.order.set(order);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.handleItemActionError(error);
+        }
+      });
+  }
+
+  private handleItemActionError(
+    error: HttpErrorResponse
+  ): void {
+    if (error.status === 404) {
+      this.actionError.set(
+        'La orden o el producto ya no existe.'
+      );
+      return;
+    }
+
+    if (error.status === 409) {
+      this.actionError.set(
+        'La orden cambió de estado y ya no puede modificarse.'
+      );
+      return;
+    }
+
+    this.actionError.set(
+      'No se pudo actualizar la orden. Intentá nuevamente.'
+    );
   }
 }

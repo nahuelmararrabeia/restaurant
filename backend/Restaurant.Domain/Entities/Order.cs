@@ -40,6 +40,23 @@ namespace Restaurant.Domain.Entities
             RecalculateTotal();
         }
 
+        public void UpdateItemQuantity(int itemId, int quantity)
+        {
+            if (Status is OrderStatus.Delivered or OrderStatus.Cancelled)
+                throw new BusinessException("Cannot modify a closed order.");
+
+            var existingItem = Items.FirstOrDefault(x => x.Id == itemId);
+
+            if(existingItem is null)
+            {
+                throw new BusinessException("The item not exists.");
+            }
+
+            existingItem.Quantity = quantity;
+
+            RecalculateTotal();
+        }
+
         public void RemoveItem(int orderItemId)
         {
             if (Status is OrderStatus.Delivered or OrderStatus.Cancelled)

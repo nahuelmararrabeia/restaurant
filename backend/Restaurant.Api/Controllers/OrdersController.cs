@@ -7,8 +7,10 @@ using Restaurant.Application.Orders.Commands.DeliverOrder;
 using Restaurant.Application.Orders.Commands.MarkOrderReady;
 using Restaurant.Application.Orders.Commands.RemoveOrderItem;
 using Restaurant.Application.Orders.Commands.StartPreparingOrder;
+using Restaurant.Application.Orders.Commands.UpdateOrderItem;
 using Restaurant.Application.Orders.Queries.GetOrderById;
 using Restaurant.Application.Orders.Queries.GetOrders;
+using Restaurant.Application.Orders.Responses;
 using Restaurant.Domain.Enums;
 
 namespace Restaurant.Api.Controllers;
@@ -82,19 +84,39 @@ public sealed class OrdersController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPut("{id:int}/items/{orderItemId:int}")]
+    [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<OrderResponse>> UpdateItem(
+    int id,
+    int orderItemId,
+    [FromBody] UpdateOrderItemCommand command,
+    CancellationToken cancellationToken)
+    {
+        var response = await _sender.Send(
+            new UpdateOrderItemCommand(
+                id,
+                orderItemId,
+                command.Quantity),
+            cancellationToken);
+
+        return Ok(response);
+    }
+
     [HttpDelete("{id:int}/items/{orderItemId:int}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveItem(
         int id,
         int orderItemId,
         CancellationToken cancellationToken)
     {
-        await _sender.Send(
+        var response = await _sender.Send(
             new RemoveOrderItemCommand(id, orderItemId),
             cancellationToken);
 
-        return NoContent();
+        return Ok(response);
     }
 
     [HttpPatch("{id:int}/preparing")]

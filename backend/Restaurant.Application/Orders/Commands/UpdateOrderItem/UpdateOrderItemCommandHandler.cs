@@ -4,20 +4,21 @@ using Restaurant.Application.Orders.Mappings;
 using Restaurant.Application.Orders.Responses;
 using Restaurant.Domain.Repositories;
 
-namespace Restaurant.Application.Orders.Commands.RemoveOrderItem;
+namespace Restaurant.Application.Orders.Commands.UpdateOrderItem;
 
-public sealed class RemoveOrderItemCommandHandler
-    : IRequestHandler<RemoveOrderItemCommand, OrderDetailsResponse>
+public sealed class UpdateOrderItemCommandHandler
+    : IRequestHandler<UpdateOrderItemCommand, OrderDetailsResponse>
 {
     private readonly IOrderRepository _orderRepository;
 
-    public RemoveOrderItemCommandHandler(IOrderRepository orderRepository)
+    public UpdateOrderItemCommandHandler(
+        IOrderRepository orderRepository)
     {
         _orderRepository = orderRepository;
     }
 
     public async Task<OrderDetailsResponse> Handle(
-        RemoveOrderItemCommand request,
+        UpdateOrderItemCommand request,
         CancellationToken cancellationToken)
     {
         var order = await _orderRepository.GetByIdWithDetailsAsync(
@@ -27,7 +28,7 @@ public sealed class RemoveOrderItemCommandHandler
         if (order is null)
             throw new NotFoundException($"Order {request.OrderId} was not found.");
 
-        order.RemoveItem(request.OrderItemId);
+        order.UpdateItemQuantity(request.ItemId, request.Quantity);
 
         await _orderRepository.SaveChangesAsync(cancellationToken);
 
