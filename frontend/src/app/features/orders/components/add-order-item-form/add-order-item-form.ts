@@ -11,6 +11,7 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
+import { CurrencyPipe } from '@angular/common';
 
 import { Product } from '../../../../shared/domain/products/product';
 import { OrderItemFormValue } from '../../models/order-item-form-value';
@@ -24,7 +25,7 @@ interface AddOrderItemFormControls {
 @Component({
   selector: 'app-add-order-item-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CurrencyPipe],
   templateUrl: './add-order-item-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

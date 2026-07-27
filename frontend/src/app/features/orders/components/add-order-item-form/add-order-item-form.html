@@ -22,7 +22,8 @@
 
       @for (product of products(); track product.id) {
         <option [ngValue]="product.id">
-          {{ product.name }} — {{ product.price }}
+          {{ product.name }} —
+          {{ product.price | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
         </option>
       }
     </select>

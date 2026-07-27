@@ -7,7 +7,7 @@
     </h3>
 
     <p class="mt-1 text-sm text-slate-500">
-      {{ item().unitPrice | currency: 'EUR' : 'symbol' }}
+      {{ item().unitPrice | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
       per unit
     </p>
 
@@ -20,7 +20,7 @@
 
   <div class="flex flex-col gap-3 sm:items-end">
     <p class="font-semibold text-slate-900">
-      {{ item().subtotal | currency: 'EUR' : 'symbol' }}
+      {{ item().subtotal | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
     </p>
 
     @if (canEdit()) {
