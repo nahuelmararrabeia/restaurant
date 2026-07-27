@@ -1,0 +1,56 @@
+<div class="flex h-screen overflow-hidden bg-slate-100">
+
+    <!-- Overlay -->
+
+    @if (sidebarOpen()) {
+
+        <div
+            class="fixed inset-0 z-30 bg-black/40 lg:hidden"
+            (click)="closeSidebar()">
+        </div>
+
+    }
+
+    <!-- Sidebar -->
+
+    <aside
+        class="
+            fixed
+            inset-y-0
+            left-0
+            z-40
+            w-64
+            border-r
+            border-slate-200
+            bg-white
+            transition-transform
+            duration-300
+            lg:static
+            lg:translate-x-0"
+        [class.-translate-x-full]="!sidebarOpen()">
+
+        <app-sidebar
+            (close)="closeSidebar()" />
+
+    </aside>
+
+    <!-- Content -->
+
+    <div class="flex min-w-0 flex-1 flex-col">
+
+        <header class="h-16 border-b border-slate-200 bg-white">
+
+            <app-header
+                (menuClick)="toggleSidebar()" />
+
+        </header>
+
+        <main class="flex-1 overflow-auto p-6">
+
+            <router-outlet />
+
+        </main>
+
+    </div>
+
+</div>
