@@ -1,0 +1,56 @@
+<table class="min-w-full divide-y divide-slate-200">
+  <thead class="bg-slate-50">
+    <tr>
+      <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+        Product
+      </th>
+
+      <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+        Price
+      </th>
+
+      <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+        Status
+      </th>
+
+      <th class="px-6 py-3">
+        <span class="sr-only">Actions</span>
+      </th>
+    </tr>
+  </thead>
+
+  <tbody class="divide-y divide-slate-100">
+    @for (product of products(); track product.id) {
+      <tr class="transition-colors hover:bg-slate-50">
+        <td class="px-6 py-4">
+          <p class="font-semibold text-slate-900">
+            {{ product.name }}
+          </p>
+
+          @if (product.description) {
+            <p class="mt-1 max-w-md truncate text-sm text-slate-500">
+              {{ product.description }}
+            </p>
+          }
+        </td>
+
+        <td class="whitespace-nowrap px-6 py-4 font-medium text-slate-700">
+          {{ product.price | currency: 'ARS' : 'symbol-narrow' : '1.2-2' }}
+        </td>
+
+        <td class="whitespace-nowrap px-6 py-4">
+          <product-status-badge [available]="product.isAvailable" />
+        </td>
+
+        <td class="whitespace-nowrap px-6 py-4 text-right">
+          <a
+            [routerLink]="['/products', product.id, 'edit']"
+            class="text-sm font-semibold text-blue-600 hover:text-blue-700"
+          >
+            Edit
+          </a>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
