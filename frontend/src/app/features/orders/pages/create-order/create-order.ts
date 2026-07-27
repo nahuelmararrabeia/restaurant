@@ -16,11 +16,12 @@ import { TablesApi } from '../../../tables/services/tables-api';
 import { CreateOrderRequest } from '../../models/create-order-request';
 import { OrdersApi } from '../../services/orders-api';
 import { HttpErrorResponse } from '@angular/common/http';
+import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
 
 @Component({
   selector: 'app-create-order',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, SubsectionHeader],
   templateUrl: './create-order.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -144,5 +145,9 @@ export class CreateOrder implements OnInit {
           );
         }
       });
+  }
+
+  cancel(): void {
+    void this.router.navigate(['/orders']);
   }
 }

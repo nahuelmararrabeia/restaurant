@@ -10,11 +10,12 @@ import { finalize } from 'rxjs';
 import { ProductForm } from '../../components/product-form/product-form';
 import { ProductFormValue } from '../../models/product-form-value';
 import { ProductsApi } from '../../services/products-api';
+import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
 
 @Component({
   selector: 'app-create-product',
   standalone: true,
-  imports: [ProductForm],
+  imports: [ProductForm, SubsectionHeader],
   templateUrl: './create-product.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

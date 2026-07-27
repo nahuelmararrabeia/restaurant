@@ -16,11 +16,12 @@ import { TableFormValue } from '../../models/table-form-value';
 import { UpdateTableRequest } from '../../models/update-table-request';
 import { TablesApi } from '../../services/tables-api';
 import { HttpErrorResponse } from '@angular/common/http';
+import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
 
 @Component({
   selector: 'app-edit-table',
   standalone: true,
-  imports: [TableForm],
+  imports: [TableForm, SubsectionHeader],
   templateUrl: './edit-table.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

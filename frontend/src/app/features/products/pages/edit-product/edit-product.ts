@@ -17,11 +17,12 @@ import { ProductForm } from '../../components/product-form/product-form';
 import { ProductFormValue } from '../../models/product-form-value';
 import { UpdateProductRequest } from '../../models/update-product-request';
 import { ProductsApi } from '../../services/products-api';
+import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
 
 @Component({
   selector: 'app-edit-product',
   standalone: true,
-  imports: [ProductForm],
+  imports: [ProductForm, SubsectionHeader],
   templateUrl: './edit-product.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

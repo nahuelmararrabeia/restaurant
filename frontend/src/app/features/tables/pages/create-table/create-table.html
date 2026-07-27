@@ -1,22 +1,10 @@
 <section class="mx-auto max-w-3xl space-y-6">
-  <header>
-    <button
-      type="button"
-      class="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900"
-      (click)="cancel()"
-    >
-      <span aria-hidden="true">←</span>
-      Volver a mesas
-    </button>
-
-    <h1 class="text-2xl font-bold text-slate-900">
-      Crear mesa
-    </h1>
-
-    <p class="mt-1 text-sm text-slate-500">
-      Agregá una nueva mesa al salón.
-    </p>
-  </header>
+  <subsection-header
+    title="Create table"
+    subtitle="Add a new table to the restaurant."
+    backButtonText="Go back to Tables"
+    (onBackButtonClick)="cancel()"
+  />
 
   @if (error()) {
     <div

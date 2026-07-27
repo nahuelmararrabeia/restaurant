@@ -11,11 +11,12 @@ import { TableForm } from '../../components/table-form/table-form';
 import { CreateTableRequest } from '../../models/create-table-request';
 import { TableFormValue } from '../../models/table-form-value';
 import { TablesApi } from '../../services/tables-api';
+import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
 
 @Component({
   selector: 'app-create-table',
   standalone: true,
-  imports: [TableForm],
+  imports: [TableForm, SubsectionHeader],
   templateUrl: './create-table.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

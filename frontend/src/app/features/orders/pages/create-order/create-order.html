@@ -1,25 +1,10 @@
 <section class="mx-auto max-w-5xl space-y-6">
-  <header
-    class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
-  >
-    <div>
-      <a
-        routerLink="/orders"
-        class="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900"
-      >
-        <span aria-hidden="true">←</span>
-        Volver a órdenes
-      </a>
-
-      <h1 class="text-2xl font-bold text-slate-900">
-        Nueva orden
-      </h1>
-
-      <p class="mt-1 text-sm text-slate-500">
-        Seleccioná una mesa disponible para comenzar el pedido.
-      </p>
-    </div>
-  </header>
+  <subsection-header
+    title="New order"
+    subtitle="Select an available table to start the order."
+    backButtonText="Go back to Orders"
+    (onBackButtonClick)="cancel()"
+  />
 
   @if (loadError()) {
     <div
