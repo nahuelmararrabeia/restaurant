@@ -19,6 +19,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
+import { ProblemDetails } from '../../../../shared/models/problem-details';
 
 @Component({
   selector: 'app-edit-table',
@@ -70,7 +71,10 @@ export class EditTable implements OnInit {
         },
         error: (error: HttpErrorResponse) => {
           if (error.status === 409) {
+            const problem = error.error as ProblemDetails | null;
+
             this.saveError.set(
+              problem?.detail ??
               'Another table with that number already exists.'
             );
             return;

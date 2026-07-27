@@ -4,6 +4,7 @@ import {
   inject,
   signal
 } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
@@ -13,6 +14,7 @@ import { TableFormValue } from '../../models/table-form-value';
 import { TablesApi } from '../../services/tables-api';
 import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
+import { ProblemDetails } from '../../../../shared/models/problem-details';
 
 @Component({
   selector: 'app-create-table',
@@ -48,7 +50,17 @@ export class CreateTable {
         next: () => {
           void this.router.navigate(['/tables']);
         },
-        error: () => {
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 409) {
+            const problem = error.error as ProblemDetails | null;
+
+            this.error.set(
+              problem?.detail ??
+              `Table '${value.number}' already exists.`
+            );
+            return;
+          }
+
           this.error.set(
             'The table could not be created. Please try again.'
           );
