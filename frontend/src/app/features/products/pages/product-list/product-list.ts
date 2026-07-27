@@ -9,6 +9,7 @@ import { SectionHeader } from '../../../../shared/components/section-header/sect
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { ProductsTable } from '../../components/products-table/products-table';
+import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-product-list',
@@ -20,7 +21,8 @@ import { ProductsTable } from '../../components/products-table/products-table';
     SectionHeader,
     LoadingState,
     ErrorState,
-    ProductsTable
+    ProductsTable,
+    EmptyState
   ],
   templateUrl: './product-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush

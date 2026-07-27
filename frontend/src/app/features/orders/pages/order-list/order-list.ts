@@ -16,6 +16,7 @@ import { SectionHeader } from '../../../../shared/components/section-header/sect
 import { OrderCard } from '../../components/order-card/order-card';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
+import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-order-list',
@@ -25,7 +26,8 @@ import { ErrorState } from '../../../../shared/components/error-state/error-stat
     OrderCard,
     SectionHeader,
     LoadingState,
-    ErrorState
+    ErrorState,
+    EmptyState
   ],
   templateUrl: './order-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush

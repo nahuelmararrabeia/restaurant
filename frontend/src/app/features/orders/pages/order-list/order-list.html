@@ -15,25 +15,12 @@
       (onClickButton)="loadOrders()"
     />
   } @else if (orders().length === 0) {
-    <div class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
-      <div
-        class="mx-auto flex size-12 items-center justify-center rounded-full bg-slate-100 text-xl"
-        aria-hidden="true"
-      >
-        🍽️
-      </div>
-
-      <h2 class="mt-4 text-base font-semibold text-slate-900">No hay órdenes activas</h2>
-
-      <p class="mt-1 text-sm text-slate-500">Creá una orden seleccionando una mesa disponible.</p>
-
-      <a
-        routerLink="/orders/new"
-        class="mt-5 inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
-      >
-        Crear orden
-      </a>
-    </div>
+    <empty-state
+      title="No orders yet"
+      subtitle="Create an order by selecting an available table."
+      buttonText="Create order"
+      [buttonLink]="['/orders', 'new']"
+    />
   } @else {
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       @for (order of orders(); track order.id) {

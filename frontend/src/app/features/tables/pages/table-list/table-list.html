@@ -7,23 +7,12 @@
   />
 
   @if (actionError()) {
-    <div
-      role="alert"
-      class="flex items-start justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3"
-    >
-      <p class="text-sm font-medium text-red-700">
-        {{ actionError() }}
-      </p>
+    <error-state
+      [text]="actionError()"
+      buttonText="×"
+      (onClickButton)="clearActionError()"
 
-      <button
-        type="button"
-        aria-label="Cerrar mensaje"
-        class="text-sm font-bold text-red-500 transition hover:text-red-700"
-        (click)="clearActionError()"
-      >
-        ×
-      </button>
-    </div>
+    />
   }
 
   @if (loading()) {
@@ -35,24 +24,12 @@
       (onClickButton)="loadTables()"
      />
   } @else if (tables().length === 0) {
-    <div
-      class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center"
-    >
-      <h2 class="font-semibold text-slate-900">
-        Todavía no hay mesas
-      </h2>
-
-      <p class="mt-1 text-sm text-slate-500">
-        Creá la primera mesa para comenzar a gestionar el salón.
-      </p>
-
-      <a
-        routerLink="/tables/new"
-        class="mt-5 inline-flex rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
-      >
-        Crear mesa
-      </a>
-    </div>
+    <empty-state
+      title="No tables yet"
+      subtitle="Create the first table to start managing the restaurant."
+      buttonText="Create table"
+      [buttonLink]="['/tables', 'new']"
+    />
   } @else {
     <div
       class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"

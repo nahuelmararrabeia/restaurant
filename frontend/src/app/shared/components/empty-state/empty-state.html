@@ -1,0 +1,22 @@
+<div
+    class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center"
+>
+    <h2 class="font-semibold text-slate-900">
+    {{ title() }}
+    </h2>
+
+    <p class="mt-1 text-sm text-slate-500">
+    {{ subtitle() }}
+    </p>
+
+    @if(buttonLink() && buttonText())
+    {
+        <a
+        [routerLink]="buttonLink()"
+        class="mt-5 inline-flex rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+        >
+        {{ buttonText() }}
+        </a>
+    }
+
+</div>
