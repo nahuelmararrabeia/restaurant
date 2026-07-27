@@ -6,25 +6,24 @@ import {
   inject,
   signal
 } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 
 import { Order } from '../../../../shared/domain/orders/order';
-import { OrderStatusBadge } from '../../components/order-status-badge/order-status-badge';
 import { OrdersApi } from '../../services/orders-api';
 import { SectionHeader } from '../../../../shared/components/section-header/section-header';
+import { OrderCard } from '../../components/order-card/order-card';
+import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 
 @Component({
   selector: 'app-order-list',
   standalone: true,
   imports: [
     RouterLink,
-    DatePipe,
-    CurrencyPipe,
-    OrderStatusBadge,
-    SectionHeader
+    OrderCard,
+    SectionHeader,
+    LoadingState
   ],
   templateUrl: './order-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush

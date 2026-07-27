@@ -21,6 +21,7 @@ import { RecentOrder } from '../../models/recent-order';
 import { DashboardStatistics } from '../../models/dashboard-statistics';
 import { DashboardApi } from '../../services/dashboard-api';
 import { SectionHeader } from '../../../../shared/components/section-header/section-header';
+import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,7 +30,8 @@ import { SectionHeader } from '../../../../shared/components/section-header/sect
     StatCard,
     TableStatusGrid,
     RecentOrders,
-    SectionHeader
+    SectionHeader,
+    LoadingState
   ],
   providers: [CurrencyPipe],
   templateUrl: './dashboard.html',

@@ -5,13 +5,7 @@
   />
 
   @if (loading() && !statisticsData()) {
-    <div
-      class="rounded-xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm"
-    >
-      <p class="text-sm text-slate-500">
-        Loading dashboard...
-      </p>
-    </div>
+    <loading-state text="Loading dashboard..." />
   } @else if (error() && !statisticsData()) {
     <div
       role="alert"

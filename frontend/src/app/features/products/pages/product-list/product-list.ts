@@ -6,6 +6,7 @@ import { ProductsApi } from '../../services/products-api';
 import { Product } from '../../../../shared/domain/products/product';
 import { finalize } from 'rxjs';
 import { SectionHeader } from '../../../../shared/components/section-header/section-header';
+import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 
 @Component({
   selector: 'app-product-list',
@@ -14,7 +15,8 @@ import { SectionHeader } from '../../../../shared/components/section-header/sect
     CurrencyPipe,
     RouterLink,
     ProductStatusBadge,
-    SectionHeader
+    SectionHeader,
+    LoadingState
   ],
   templateUrl: './product-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush

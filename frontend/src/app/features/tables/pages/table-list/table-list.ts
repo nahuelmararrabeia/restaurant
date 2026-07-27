@@ -14,6 +14,7 @@ import { RestaurantTable } from '../../../../shared/domain/tables/restaurant-tab
 import { TableStatusBadge } from '../../components/table-status-badge/table-status-badge';
 import { TablesApi } from '../../services/tables-api';
 import { SectionHeader } from '../../../../shared/components/section-header/section-header';
+import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 
 @Component({
   selector: 'app-table-list',
@@ -21,7 +22,8 @@ import { SectionHeader } from '../../../../shared/components/section-header/sect
   imports: [
     RouterLink,
     TableStatusBadge,
-    SectionHeader
+    SectionHeader,
+    LoadingState
   ],
   templateUrl: './table-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush
