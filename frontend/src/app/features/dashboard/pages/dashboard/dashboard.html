@@ -7,32 +7,14 @@
   @if (loading() && !statisticsData()) {
     <loading-state text="Loading dashboard..." />
   } @else if (error() && !statisticsData()) {
-    <div
-      role="alert"
-      class="rounded-xl border border-red-200 bg-red-50 px-5 py-4"
-    >
-      <p class="text-sm font-medium text-red-700">
-        {{ error() }}
-      </p>
-
-      <button
-        type="button"
-        class="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
-        (click)="loadDashboard()"
-      >
-        Retry
-      </button>
-    </div>
+    <error-state
+      [text]="error()"
+      buttonText="Retry"
+      (onClickButton)="loadDashboard()"
+    />
   } @else {
     @if (error()) {
-      <div
-        role="alert"
-        class="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4"
-      >
-        <p class="text-sm font-medium text-amber-700">
-          {{ error() }}
-        </p>
-      </div>
+      <error-state [text]="error()" />
     }
 
     <section>

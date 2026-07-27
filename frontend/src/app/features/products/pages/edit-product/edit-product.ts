@@ -19,11 +19,12 @@ import { UpdateProductRequest } from '../../models/update-product-request';
 import { ProductsApi } from '../../services/products-api';
 import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
+import { ErrorState } from '../../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-edit-product',
   standalone: true,
-  imports: [ProductForm, SubsectionHeader, LoadingState],
+  imports: [ProductForm, SubsectionHeader, LoadingState, ErrorState],
   templateUrl: './edit-product.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

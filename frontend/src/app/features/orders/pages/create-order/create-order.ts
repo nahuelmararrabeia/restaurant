@@ -17,11 +17,13 @@ import { CreateOrderRequest } from '../../models/create-order-request';
 import { OrdersApi } from '../../services/orders-api';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
+import { ErrorState } from '../../../../shared/components/error-state/error-state';
+import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 
 @Component({
   selector: 'app-create-order',
   standalone: true,
-  imports: [RouterLink, SubsectionHeader],
+  imports: [RouterLink, SubsectionHeader, ErrorState, LoadingState],
   templateUrl: './create-order.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

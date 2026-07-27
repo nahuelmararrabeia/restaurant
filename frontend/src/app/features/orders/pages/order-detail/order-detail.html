@@ -35,38 +35,18 @@
   @if (loading()) {
     <loading-state text="Loading order..."/>
   } @else if (error()) {
-    <div role="alert" class="rounded-xl border border-red-200 bg-red-50 px-5 py-4">
-      <p class="text-sm font-medium text-red-700">
-        {{ error() }}
-      </p>
-
-      <button
-        type="button"
-        class="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
-        (click)="loadOrder()"
-      >
-        Reintentar
-      </button>
-    </div>
+    <error-state
+      [text]="error()"
+      buttonText="Retry"
+      (onClickButton)="loadOrder()"
+    />
   } @else if (order(); as currentOrder) {
     @if (actionError()) {
-      <div
-        role="alert"
-        class="flex items-start justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-5 py-4"
-      >
-        <p class="text-sm font-medium text-red-700">
-          {{ actionError() }}
-        </p>
-
-        <button
-          type="button"
-          aria-label="Cerrar mensaje"
-          class="text-lg font-bold text-red-500 transition hover:text-red-700"
-          (click)="clearActionError()"
-        >
-          ×
-        </button>
-      </div>
+      <error-state
+        [text]="actionError()"
+        buttonText="×"
+        (onClickButton)="clearActionError()"
+      />
     }
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">

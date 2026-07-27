@@ -15,6 +15,7 @@ import { TableStatusBadge } from '../../components/table-status-badge/table-stat
 import { TablesApi } from '../../services/tables-api';
 import { SectionHeader } from '../../../../shared/components/section-header/section-header';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
+import { ErrorState } from '../../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-table-list',
@@ -23,7 +24,8 @@ import { LoadingState } from '../../../../shared/components/loading-state/loadin
     RouterLink,
     TableStatusBadge,
     SectionHeader,
-    LoadingState
+    LoadingState,
+    ErrorState
   ],
   templateUrl: './table-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush

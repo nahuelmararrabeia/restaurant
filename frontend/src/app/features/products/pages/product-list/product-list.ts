@@ -7,6 +7,7 @@ import { Product } from '../../../../shared/domain/products/product';
 import { finalize } from 'rxjs';
 import { SectionHeader } from '../../../../shared/components/section-header/section-header';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
+import { ErrorState } from '../../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-product-list',
@@ -16,7 +17,8 @@ import { LoadingState } from '../../../../shared/components/loading-state/loadin
     RouterLink,
     ProductStatusBadge,
     SectionHeader,
-    LoadingState
+    LoadingState,
+    ErrorState
   ],
   templateUrl: './product-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush

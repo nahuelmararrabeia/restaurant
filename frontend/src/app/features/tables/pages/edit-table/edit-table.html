@@ -9,42 +9,14 @@
   @if (loading()) {
     <loading-state text="Cargando mesa..."/>
   } @else if (loadError()) {
-    <div
-      role="alert"
-      class="rounded-xl border border-red-200 bg-red-50 px-5 py-4"
-    >
-      <p class="text-sm font-medium text-red-700">
-        {{ loadError() }}
-      </p>
-
-      <div class="mt-4 flex flex-wrap gap-3">
-        <button
-          type="button"
-          class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
-          (click)="retry()"
-        >
-          Reintentar
-        </button>
-
-        <button
-          type="button"
-          class="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100"
-          (click)="cancel()"
-        >
-          Volver
-        </button>
-      </div>
-    </div>
+    <error-state
+      [text]="loadError()"
+      buttonText="Retry"
+      (onClickButton)="retry()"
+     />
   } @else if (table(); as currentTable) {
     @if (saveError()) {
-      <div
-        role="alert"
-        class="rounded-xl border border-red-200 bg-red-50 px-4 py-3"
-      >
-        <p class="text-sm font-medium text-red-700">
-          {{ saveError() }}
-        </p>
-      </div>
+      <error-state [text]="saveError()" />
     }
 
     <div

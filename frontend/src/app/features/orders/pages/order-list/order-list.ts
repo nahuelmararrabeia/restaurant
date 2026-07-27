@@ -15,6 +15,7 @@ import { OrdersApi } from '../../services/orders-api';
 import { SectionHeader } from '../../../../shared/components/section-header/section-header';
 import { OrderCard } from '../../components/order-card/order-card';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
+import { ErrorState } from '../../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-order-list',
@@ -23,7 +24,8 @@ import { LoadingState } from '../../../../shared/components/loading-state/loadin
     RouterLink,
     OrderCard,
     SectionHeader,
-    LoadingState
+    LoadingState,
+    ErrorState
   ],
   templateUrl: './order-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush

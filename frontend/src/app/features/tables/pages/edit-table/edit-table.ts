@@ -18,11 +18,12 @@ import { TablesApi } from '../../services/tables-api';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
+import { ErrorState } from '../../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-edit-table',
   standalone: true,
-  imports: [TableForm, SubsectionHeader, LoadingState],
+  imports: [TableForm, SubsectionHeader, LoadingState, ErrorState],
   templateUrl: './edit-table.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

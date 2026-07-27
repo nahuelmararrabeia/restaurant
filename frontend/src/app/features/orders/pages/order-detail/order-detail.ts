@@ -23,6 +23,7 @@ import { ProductsApi } from '../../../products/services/products-api';
 import { OrderItemFormValue } from '../../models/order-item-form-value';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
+import { ErrorState } from '../../../../shared/components/error-state/error-state';
 
 type OrderItemAction = 'update' | 'remove';
 
@@ -46,7 +47,8 @@ type OrderAction =
     DatePipe,
     OrderStatusBadge,
     AddOrderItemForm,
-    LoadingState
+    LoadingState,
+    ErrorState
   ],
   templateUrl: './order-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush

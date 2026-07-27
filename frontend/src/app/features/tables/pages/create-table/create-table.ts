@@ -12,11 +12,12 @@ import { CreateTableRequest } from '../../models/create-table-request';
 import { TableFormValue } from '../../models/table-form-value';
 import { TablesApi } from '../../services/tables-api';
 import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
+import { ErrorState } from '../../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-create-table',
   standalone: true,
-  imports: [TableForm, SubsectionHeader],
+  imports: [TableForm, SubsectionHeader, ErrorState],
   templateUrl: './create-table.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

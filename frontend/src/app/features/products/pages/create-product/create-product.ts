@@ -11,11 +11,12 @@ import { ProductForm } from '../../components/product-form/product-form';
 import { ProductFormValue } from '../../models/product-form-value';
 import { ProductsApi } from '../../services/products-api';
 import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
+import { ErrorState } from '../../../../shared/components/error-state/error-state';
 
 @Component({
   selector: 'app-create-product',
   standalone: true,
-  imports: [ProductForm, SubsectionHeader],
+  imports: [ProductForm, SubsectionHeader, ErrorState],
   templateUrl: './create-product.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

@@ -9,21 +9,11 @@
   @if (loading()) {
     <loading-state text="Loading products..." />
   } @else if (error()) {
-    <div
-      class="rounded-xl border border-red-200 bg-red-50 px-6 py-5"
-    >
-      <p class="font-medium text-red-700">
-        {{ error() }}
-      </p>
-
-      <button
-        type="button"
-        class="mt-3 text-sm font-semibold text-red-700 underline"
-        (click)="loadProducts()"
-      >
-        Try again
-      </button>
-    </div>
+    <error-state
+      [text]="error()"
+      buttonText="Try again"
+      (onClickButton)="loadProducts()"
+      />
   } @else if (products().length === 0) {
     <div
       class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center"

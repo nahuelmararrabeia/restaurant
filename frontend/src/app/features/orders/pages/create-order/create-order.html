@@ -7,52 +7,23 @@
   />
 
   @if (loadError()) {
-    <div
-      role="alert"
-      class="rounded-xl border border-red-200 bg-red-50 px-5 py-4"
-    >
-      <p class="text-sm font-medium text-red-700">
-        {{ loadError() }}
-      </p>
-
-      <button
-        type="button"
-        class="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
-        (click)="loadTables()"
-      >
-        Reintentar
-      </button>
-    </div>
+    <error-state
+      [text]="loadError()"
+      buttonText="Retry"
+      (onClickButton)="loadTables()"
+    />
   }
 
   @if (createError()) {
-    <div
-      role="alert"
-      class="flex items-start justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-5 py-4"
-    >
-      <p class="text-sm font-medium text-red-700">
-        {{ createError() }}
-      </p>
-
-      <button
-        type="button"
-        aria-label="Cerrar mensaje"
-        class="text-lg font-bold text-red-500 transition hover:text-red-700"
-        (click)="createError.set(null)"
-      >
-        ×
-      </button>
-    </div>
+    <error-state
+      [text]="createError()"
+      buttonText="×"
+      (onClickButton)="createError()"
+    />
   }
 
   @if (loading()) {
-    <div
-      class="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm"
-    >
-      <p class="text-sm text-slate-500">
-        Cargando mesas disponibles...
-      </p>
-    </div>
+    <loading-state text="Cargando mesas disponibles..." />
   } @else if (!loadError() && tables().length === 0) {
     <div
       class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center"
