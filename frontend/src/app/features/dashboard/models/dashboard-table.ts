@@ -1,8 +1,8 @@
 export type DashboardTableStatus =
-  | 'available'
-  | 'occupied'
-  | 'reserved'
-  | 'disabled';
+  | 'Available'
+  | 'Occupied'
+  | 'Reserved'
+  | 'Disabled';
 
 export interface DashboardTable {
   id: number;

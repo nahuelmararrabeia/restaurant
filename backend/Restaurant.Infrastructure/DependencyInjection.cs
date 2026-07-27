@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Restaurant.Application.Dashboard;
 using Restaurant.Domain.Repositories;
 using Restaurant.Infrastructure.Persistence;
+using Restaurant.Infrastructure.Persistence.Services;
 using Restaurant.Infrastructure.Repositories;
 
 namespace TaskManagement.Infrastructure;
@@ -21,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<ITableRepository, TableRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+        services.AddScoped<IDashboardService, DashboardService>();
 
         return services;
     }

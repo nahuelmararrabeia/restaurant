@@ -1,117 +1,131 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  signal
+} from '@angular/core';
+import { Router } from '@angular/router';
+import { CurrencyPipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
+
 import { StatCard } from '../../../../shared/components/stat-card/stat-card';
 import { APP_ICONS } from '../../../../shared/icons/icons';
 import { TableStatusGrid } from '../../components/table-status-grid/table-status-grid';
 import { DashboardTable } from '../../models/dashboard-table';
 import { RecentOrders } from '../../components/recent-orders/recent-orders';
 import { RecentOrder } from '../../models/recent-order';
+import { DashboardStatistics } from '../../models/dashboard-statistics';
+import { DashboardApi } from '../../services/dashboard-api';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [StatCard, TableStatusGrid, RecentOrders],
+  standalone: true,
+  imports: [
+    StatCard,
+    TableStatusGrid,
+    RecentOrders
+  ],
+  providers: [CurrencyPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Dashboard {
-  readonly statistics = signal([
-        {
-            title: 'Products',
-            value: 24,
-            icon: APP_ICONS.products,
-            color: 'blue'
+export class Dashboard implements OnInit {
+  private readonly dashboardApi = inject(DashboardApi);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
+  private readonly currencyPipe = inject(CurrencyPipe);
+
+  readonly statisticsData =
+    signal<DashboardStatistics | null>(null);
+
+  readonly tables = signal<DashboardTable[]>([]);
+  readonly recentOrders = signal<RecentOrder[]>([]);
+
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+
+  readonly statistics = computed(() => {
+    const statistics = this.statisticsData();
+
+    if (!statistics) {
+      return [];
+    }
+
+    return [
+      {
+        title: 'Products',
+        value: statistics.products,
+        icon: APP_ICONS.products,
+        color: 'blue' as const
+      },
+      {
+        title: 'Tables',
+        value: statistics.tables,
+        icon: APP_ICONS.tables,
+        color: 'green' as const
+      },
+      {
+        title: 'Active orders',
+        value: statistics.activeOrders,
+        icon: APP_ICONS.orders,
+        color: 'amber' as const
+      },
+      {
+        title: 'Today revenue',
+        value: this.currencyPipe.transform(
+            statistics.todayRevenue,
+            'ARS',
+            'symbol-narrow',
+            '1.2-2',
+            'es-AR'
+        ) ?? '$0.00',
+        icon: APP_ICONS.revenue,
+        color: 'purple' as const
+      }
+    ];
+  });
+
+  ngOnInit(): void {
+    this.loadDashboard();
+  }
+
+  loadDashboard(): void {
+    if (this.loading()) {
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.dashboardApi
+      .get()
+      .pipe(
+        finalize(() => this.loading.set(false)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: response => {
+          this.statisticsData.set(response.statistics);
+          this.tables.set(response.tables);
+          this.recentOrders.set(response.recentOrders);
         },
-        {
-            title: 'Tables',
-            value: 8,
-            icon: APP_ICONS.tables,
-            color: 'green'
-        },
-        {
-            title: 'Orders',
-            value: 5,
-            icon: APP_ICONS.orders,
-            color: 'amber'
-        },
-        {
-            title: 'Revenue',
-            value: '$1,250',
-            icon: APP_ICONS.revenue,
-            color: 'purple'
+        error: () => {
+          this.error.set(
+            'No se pudo cargar la información del dashboard.'
+          );
         }
-    ]);
+      });
+  }
 
-    readonly tables = signal<DashboardTable[]>([
-    {
-        id: 1,
-        number: 1,
-        capacity: 4,
-        status: 'available'
-    },
-    {
-        id: 2,
-        number: 2,
-        capacity: 2,
-        status: 'occupied'
-    },
-    {
-        id: 3,
-        number: 3,
-        capacity: 6,
-        status: 'reserved'
-    },
-    {
-        id: 4,
-        number: 4,
-        capacity: 4,
-        status: 'disabled'
-    },
-    {
-        id: 5,
-        number: 5,
-        capacity: 4,
-        status: 'available'
-    },
-    {
-        id: 6,
-        number: 6,
-        capacity: 2,
-        status: 'available'
-    }
+  openOrder(orderId: number): void {
+    void this.router.navigate([
+      '/orders',
+      orderId
     ]);
-
-    readonly recentOrders = signal<RecentOrder[]>([
-    {
-        id: 105,
-        tableNumber: 3,
-        status: 'preparing',
-        total: 48.5,
-        orderedAt: new Date()
-    },
-    {
-        id: 104,
-        tableNumber: 5,
-        status: 'ready',
-        total: 32,
-        orderedAt: new Date(Date.now() - 12 * 60 * 1000)
-    },
-    {
-        id: 103,
-        tableNumber: 1,
-        status: 'pending',
-        total: 21.75,
-        orderedAt: new Date(Date.now() - 25 * 60 * 1000)
-    },
-    {
-        id: 102,
-        tableNumber: 7,
-        status: 'delivered',
-        total: 65.2,
-        orderedAt: new Date(Date.now() - 45 * 60 * 1000)
-    }
-    ]);
-
-    openOrder(orderId: number): void {
-       console.log('Selected order:', orderId);
-    }
+  }
 }
