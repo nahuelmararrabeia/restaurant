@@ -17,12 +17,14 @@ import { SectionHeader } from '../../../../shared/components/section-header/sect
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
+import { TableCard } from '../../components/table-card/table-card';
 
 @Component({
   selector: 'app-table-list',
   standalone: true,
   imports: [
     RouterLink,
+    TableCard,
     TableStatusBadge,
     SectionHeader,
     LoadingState,

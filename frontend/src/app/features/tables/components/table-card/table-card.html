@@ -1,0 +1,77 @@
+<article
+  class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+>
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <p class="text-sm font-medium text-slate-500">Mesa</p>
+
+      <h2 class="mt-1 text-2xl font-bold text-slate-900">
+        {{ table().number }}
+      </h2>
+    </div>
+
+    <table-status-badge [status]="table().status" />
+  </div>
+
+  <div class="mt-6 border-t border-slate-100 pt-4">
+    <p class="text-sm text-slate-500">Capacidad</p>
+
+    <p class="mt-1 font-semibold text-slate-900">
+      {{ table().capacity }}
+      {{ table().capacity === 1 ? 'persona' : 'personas' }}
+    </p>
+  </div>
+
+  <div class="mt-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 pt-4">
+    <a
+      [routerLink]="['/tables', table().id, 'edit']"
+      class="text-sm font-semibold text-blue-600 transition hover:text-blue-700"
+      [class.pointer-events-none]="isActionInProgress()"
+      [class.opacity-50]="isActionInProgress()"
+    >
+      Editar
+    </a>
+
+    @if (table().status === 'Disabled') {
+      <button
+        type="button"
+        class="text-sm font-semibold text-green-600 transition hover:text-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="isActionInProgress()"
+        (click)="onClickEnable.emit()"
+      >
+        @if (isActionInProgress()) {
+          Habilitando...
+        } @else {
+          Habilitar
+        }
+      </button>
+    } @else {
+      <button
+        type="button"
+        class="text-sm font-semibold text-amber-600 transition hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="isActionInProgress()"
+        (click)="onClickDisable.emit()"
+      >
+        @if (isActionInProgress()) {
+          Deshabilitando...
+        } @else {
+          Deshabilitar
+        }
+      </button>
+    }
+    @if (canDelete()) {
+      <button
+        type="button"
+        class="text-sm font-semibold text-red-600 transition hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="isActionInProgress()"
+        (click)="onClickDelete.emit()"
+      >
+        @if (isActionInProgress()) {
+          Eliminando...
+        } @else {
+          Eliminar
+        }
+      </button>
+    }
+  </div>
+</article>
