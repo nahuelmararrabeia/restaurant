@@ -50,6 +50,7 @@ public sealed class CreateOrderCommandHandler
 
         await _orderRepository.AddAsync(order, cancellationToken);
         await _orderRepository.SaveChangesAsync(cancellationToken);
+        await _tableRepository.SaveChangesAsync();
 
         return order.Id;
     }

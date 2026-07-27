@@ -5,6 +5,7 @@ import { ProductStatusBadge } from '../../components/product-status-badge/produc
 import { ProductsApi } from '../../services/products-api';
 import { Product } from '../../../../shared/domain/products/product';
 import { finalize } from 'rxjs';
+import { SectionHeader } from '../../../../shared/components/section-header/section-header';
 
 @Component({
   selector: 'app-product-list',
@@ -12,7 +13,8 @@ import { finalize } from 'rxjs';
   imports: [
     CurrencyPipe,
     RouterLink,
-    ProductStatusBadge
+    ProductStatusBadge,
+    SectionHeader
   ],
   templateUrl: './product-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush

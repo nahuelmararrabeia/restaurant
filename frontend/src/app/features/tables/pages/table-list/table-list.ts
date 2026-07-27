@@ -13,13 +13,15 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RestaurantTable } from '../../../../shared/domain/tables/restaurant-table';
 import { TableStatusBadge } from '../../components/table-status-badge/table-status-badge';
 import { TablesApi } from '../../services/tables-api';
+import { SectionHeader } from '../../../../shared/components/section-header/section-header';
 
 @Component({
   selector: 'app-table-list',
   standalone: true,
   imports: [
     RouterLink,
-    TableStatusBadge
+    TableStatusBadge,
+    SectionHeader
   ],
   templateUrl: './table-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,28 +1,8 @@
 <section class="space-y-8">
-  <header class="flex items-start justify-between gap-4">
-    <div>
-      <h1 class="text-2xl font-bold text-slate-900">
-        Dashboard
-      </h1>
-
-      <p class="mt-1 text-sm text-slate-500">
-        Overview of your restaurant activity.
-      </p>
-    </div>
-
-    <button
-      type="button"
-      class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-      [disabled]="loading()"
-      (click)="loadDashboard()"
-    >
-      @if (loading()) {
-        Updating...
-      } @else {
-        Refresh
-      }
-    </button>
-  </header>
+  <section-header
+    title="Dashboard"
+    subtitle="verview of your restaurant activity."
+  />
 
   @if (loading() && !statisticsData()) {
     <div

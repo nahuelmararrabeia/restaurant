@@ -14,6 +14,7 @@ import { finalize } from 'rxjs';
 import { Order } from '../../../../shared/domain/orders/order';
 import { OrderStatusBadge } from '../../components/order-status-badge/order-status-badge';
 import { OrdersApi } from '../../services/orders-api';
+import { SectionHeader } from '../../../../shared/components/section-header/section-header';
 
 @Component({
   selector: 'app-order-list',
@@ -22,7 +23,8 @@ import { OrdersApi } from '../../services/orders-api';
     RouterLink,
     DatePipe,
     CurrencyPipe,
-    OrderStatusBadge
+    OrderStatusBadge,
+    SectionHeader
   ],
   templateUrl: './order-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush

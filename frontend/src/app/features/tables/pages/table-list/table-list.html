@@ -1,24 +1,10 @@
 <section class="space-y-6">
-  <header
-    class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-  >
-    <div>
-      <h1 class="text-2xl font-bold text-slate-900">
-        Mesas
-      </h1>
-
-      <p class="mt-1 text-sm text-slate-500">
-        Administrá la capacidad y disponibilidad de las mesas.
-      </p>
-    </div>
-
-    <a
-      routerLink="/tables/new"
-      class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
-    >
-      Agregar mesa
-    </a>
-  </header>
+  <section-header
+    title="Tables"
+    subtitle="Manage the capacity and availability of the tables"
+    actionText="Add table"
+    [actionLink]="['/tables', 'new']"
+  />
 
   @if (actionError()) {
     <div
