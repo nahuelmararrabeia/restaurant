@@ -23,9 +23,7 @@ import { TableCard } from '../../components/table-card/table-card';
   selector: 'app-table-list',
   standalone: true,
   imports: [
-    RouterLink,
     TableCard,
-    TableStatusBadge,
     SectionHeader,
     LoadingState,
     ErrorState,

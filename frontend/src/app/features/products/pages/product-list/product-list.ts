@@ -15,9 +15,6 @@ import { EmptyState } from '../../../../shared/components/empty-state/empty-stat
   selector: 'app-product-list',
   standalone: true,
   imports: [
-    CurrencyPipe,
-    RouterLink,
-    ProductStatusBadge,
     SectionHeader,
     LoadingState,
     ErrorState,

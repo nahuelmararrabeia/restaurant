@@ -22,7 +22,6 @@ import { EmptyState } from '../../../../shared/components/empty-state/empty-stat
   selector: 'app-order-list',
   standalone: true,
   imports: [
-    RouterLink,
     OrderCard,
     SectionHeader,
     LoadingState,
