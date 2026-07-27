@@ -1,0 +1,79 @@
+<section class="mx-auto max-w-3xl space-y-6">
+  <header>
+    <button
+      type="button"
+      class="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900"
+      (click)="cancel()"
+    >
+      <span aria-hidden="true">←</span>
+      Volver a productos
+    </button>
+
+    <h1 class="text-2xl font-bold text-slate-900">
+      Editar producto
+    </h1>
+
+    <p class="mt-1 text-sm text-slate-500">
+      Modificá la información del producto.
+    </p>
+  </header>
+
+  @if (loading()) {
+    <div
+      class="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm"
+    >
+      <p class="text-sm text-slate-500">
+        Cargando producto...
+      </p>
+    </div>
+  } @else if (loadError()) {
+    <div
+      role="alert"
+      class="rounded-xl border border-red-200 bg-red-50 px-5 py-4"
+    >
+      <p class="text-sm font-medium text-red-700">
+        {{ loadError() }}
+      </p>
+
+      <div class="mt-4 flex flex-wrap gap-3">
+        <button
+          type="button"
+          class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+          (click)="retry()"
+        >
+          Reintentar
+        </button>
+
+        <button
+          type="button"
+          class="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100"
+          (click)="cancel()"
+        >
+          Volver
+        </button>
+      </div>
+    </div>
+  } @else if (product(); as currentProduct) {
+    @if (saveError()) {
+      <div
+        role="alert"
+        class="rounded-xl border border-red-200 bg-red-50 px-4 py-3"
+      >
+        <p class="text-sm font-medium text-red-700">
+          {{ saveError() }}
+        </p>
+      </div>
+    }
+
+    <div
+      class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+    >
+      <product-form
+        [initialValue]="currentProduct"
+        [loading]="saving()"
+        (save)="updateProduct($event)"
+        (cancel)="cancel()"
+      />
+    </div>
+  }
+</section>

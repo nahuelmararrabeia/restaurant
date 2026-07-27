@@ -54,11 +54,14 @@ export class ProductForm {
         return;
       }
 
-      this.form.patchValue({
+      this.form.reset({
         name: product.name,
         description: product.description ?? '',
         price: product.price
       });
+
+      this.form.markAsPristine();
+      this.form.markAsUntouched();
     });
   }
 
