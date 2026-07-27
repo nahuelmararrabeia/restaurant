@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -7,6 +7,7 @@ import { Order } from '../../../shared/domain/orders/order';
 import { AddOrderItemRequest } from '../models/add-order-item-request';
 import { CreateOrderRequest } from '../models/create-order-request';
 import { UpdateOrderItemRequest } from '../models/update-order-item-request';
+import { PagedOrders } from '../models/paged-orders';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +17,17 @@ export class OrdersApi {
 
   private readonly baseUrl = `${environment.apiUrl}/Orders`;
 
-  getAll(): Observable<Order[]> {
-    return this.http.get<Order[]>(
-      `${this.baseUrl}`
+  getAll(
+    page = 1,
+    pageSize = 9
+  ): Observable<PagedOrders> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('pageSize', pageSize);
+
+    return this.http.get<PagedOrders>(
+      this.baseUrl,
+      { params }
     );
   }
 

@@ -38,6 +38,33 @@ public class OrderRepository : IOrderRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<(List<Order> Items, int TotalCount)> GetPagedAsync(
+        OrderStatus? status,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.Orders
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (status is not null)
+            query = query.Where(order => order.Status == status);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .Include(order => order.Table)
+            .Include(order => order.Items)
+                .ThenInclude(item => item.Product)
+            .OrderByDescending(order => order.OrderedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
+    }
+
     public async Task<Order?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await _context.Orders

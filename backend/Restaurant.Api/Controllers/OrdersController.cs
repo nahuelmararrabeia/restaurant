@@ -30,10 +30,12 @@ public sealed class OrdersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(
         [FromQuery] OrderStatus? status,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 9)
     {
         var response = await _sender.Send(
-            new GetOrdersQuery(status),
+            new GetOrdersQuery(status, page, pageSize),
             cancellationToken);
 
         return Ok(response);

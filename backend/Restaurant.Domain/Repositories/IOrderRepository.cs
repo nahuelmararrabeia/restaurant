@@ -7,6 +7,11 @@ public interface IOrderRepository
 {
     Task<List<Order>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<List<Order>> GetByStatusAsync(OrderStatus status, CancellationToken cancellationToken = default);
+    Task<(List<Order> Items, int TotalCount)> GetPagedAsync(
+        OrderStatus? status,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
     Task<Order?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<Order?> GetByIdWithDetailsAsync(int id, CancellationToken cancellationToken = default);
     Task<Order?> GetByIdWithDetailsAsNoTrackingAsync(int id, CancellationToken cancellationToken = default);

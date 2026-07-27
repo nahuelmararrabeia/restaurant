@@ -38,6 +38,10 @@ export class OrderList implements OnInit {
   readonly orders = signal<Order[]>([]);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly page = signal(1);
+  readonly pageSize = 9;
+  readonly totalCount = signal(0);
+  readonly totalPages = signal(0);
 
   ngOnInit(): void {
     this.loadOrders();
@@ -52,14 +56,17 @@ export class OrderList implements OnInit {
     this.error.set(null);
 
     this.ordersApi
-      .getAll()
+      .getAll(this.page(), this.pageSize)
       .pipe(
         finalize(() => this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
-        next: orders => {
-          this.orders.set(orders);
+        next: response => {
+          this.orders.set(response.items);
+          this.page.set(response.page);
+          this.totalCount.set(response.totalCount);
+          this.totalPages.set(response.totalPages);
         },
         error: () => {
           this.error.set(
@@ -67,5 +74,19 @@ export class OrderList implements OnInit {
           );
         }
       });
+  }
+
+  goToPage(page: number): void {
+    if (
+      this.loading() ||
+      page < 1 ||
+      page > this.totalPages() ||
+      page === this.page()
+    ) {
+      return;
+    }
+
+    this.page.set(page);
+    this.loadOrders();
   }
 }

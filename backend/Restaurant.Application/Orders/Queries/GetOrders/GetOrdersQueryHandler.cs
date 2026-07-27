@@ -7,7 +7,7 @@ using Restaurant.Domain.Repositories;
 namespace Restaurant.Application.Orders.Queries.GetOrders;
 
 public sealed class GetOrdersQueryHandler
-    : IRequestHandler<GetOrdersQuery, List<OrderResponse>>
+    : IRequestHandler<GetOrdersQuery, PagedOrdersResponse>
 {
     private readonly IOrderRepository _orderRepository;
 
@@ -16,16 +16,28 @@ public sealed class GetOrdersQueryHandler
         _orderRepository = orderRepository;
     }
 
-    public async Task<List<OrderResponse>> Handle(
+    public async Task<PagedOrdersResponse> Handle(
         GetOrdersQuery request,
         CancellationToken cancellationToken)
     {
-        var orders = request.Status is null
-            ? await _orderRepository.GetAllAsync(cancellationToken)
-            : await _orderRepository.GetByStatusAsync(request.Status.Value, cancellationToken);
+        var page = Math.Max(request.Page, 1);
+        var pageSize = Math.Clamp(request.PageSize, 1, 100);
 
-        return orders
+        var (orders, totalCount) = await _orderRepository.GetPagedAsync(
+            request.Status,
+            page,
+            pageSize,
+            cancellationToken);
+
+        var items = orders
             .Select(order => order.ToResponse())
             .ToList();
+
+        return new PagedOrdersResponse(
+            items,
+            page,
+            pageSize,
+            totalCount,
+            (int)Math.Ceiling(totalCount / (double)pageSize));
     }
 }
