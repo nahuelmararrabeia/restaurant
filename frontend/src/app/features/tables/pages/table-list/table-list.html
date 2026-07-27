@@ -20,6 +20,26 @@
     </a>
   </header>
 
+  @if (actionError()) {
+    <div
+      role="alert"
+      class="flex items-start justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3"
+    >
+      <p class="text-sm font-medium text-red-700">
+        {{ actionError() }}
+      </p>
+
+      <button
+        type="button"
+        aria-label="Cerrar mensaje"
+        class="text-sm font-bold text-red-500 transition hover:text-red-700"
+        (click)="clearActionError()"
+      >
+        ×
+      </button>
+    </div>
+  }
+
   @if (loading()) {
     <div
       class="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm"
@@ -100,14 +120,58 @@
           </div>
 
           <div
-            class="mt-5 flex items-center justify-end border-t border-slate-100 pt-4"
+            class="mt-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 pt-4"
           >
             <a
               [routerLink]="['/tables', table.id, 'edit']"
               class="text-sm font-semibold text-blue-600 transition hover:text-blue-700"
+              [class.pointer-events-none]="isActionInProgress(table.id)"
+              [class.opacity-50]="isActionInProgress(table.id)"
             >
               Editar
             </a>
+
+            @if (table.status === 'disabled') {
+              <button
+                type="button"
+                class="text-sm font-semibold text-green-600 transition hover:text-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                [disabled]="isActionInProgress(table.id)"
+                (click)="enableTable(table)"
+              >
+                @if (isActionInProgress(table.id)) {
+                  Habilitando...
+                } @else {
+                  Habilitar
+                }
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="text-sm font-semibold text-amber-600 transition hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+                [disabled]="isActionInProgress(table.id)"
+                (click)="disableTable(table)"
+              >
+                @if (isActionInProgress(table.id)) {
+                  Deshabilitando...
+                } @else {
+                  Deshabilitar
+                }
+              </button>
+            }
+            @if (canDelete(table)) {
+              <button
+                type="button"
+                class="text-sm font-semibold text-red-600 transition hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                [disabled]="isActionInProgress(table.id)"
+                (click)="deleteTable(table)"
+              >
+                @if (isActionInProgress(table.id)) {
+                  Eliminando...
+                } @else {
+                  Eliminar
+                }
+              </button>
+            }
           </div>
         </article>
       }
