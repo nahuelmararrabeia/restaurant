@@ -10,4 +10,5 @@ export interface Order {
   total: number;
   orderedAt: string;
   updatedAt: string;
+  closedAt: string;
 }

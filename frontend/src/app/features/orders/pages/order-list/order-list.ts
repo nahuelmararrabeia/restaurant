@@ -48,7 +48,7 @@ export class OrderList implements OnInit {
     this.error.set(null);
 
     this.ordersApi
-      .getActive()
+      .getAll()
       .pipe(
         finalize(() => this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef)

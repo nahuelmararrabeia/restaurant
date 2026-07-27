@@ -1,11 +1,13 @@
 ﻿using MediatR;
 using Restaurant.Application.Common.Exceptions;
+using Restaurant.Application.Orders.Mappings;
+using Restaurant.Application.Orders.Responses;
 using Restaurant.Domain.Repositories;
 
 namespace Restaurant.Application.Orders.Commands.StartPreparingOrder;
 
 public sealed class StartPreparingOrderCommandHandler
-    : IRequestHandler<StartPreparingOrderCommand>
+    : IRequestHandler<StartPreparingOrderCommand, OrderDetailsResponse>
 {
     private readonly IOrderRepository _orderRepository;
 
@@ -15,11 +17,11 @@ public sealed class StartPreparingOrderCommandHandler
         _orderRepository = orderRepository;
     }
 
-    public async Task Handle(
+    public async Task<OrderDetailsResponse> Handle(
         StartPreparingOrderCommand request,
         CancellationToken cancellationToken)
     {
-        var order = await _orderRepository.GetByIdAsync(
+        var order = await _orderRepository.GetByIdWithDetailsAsync(
             request.Id,
             cancellationToken);
 
@@ -29,5 +31,7 @@ public sealed class StartPreparingOrderCommandHandler
         order.StartPreparing();
 
         await _orderRepository.SaveChangesAsync(cancellationToken);
+
+        return order.ToDetailsResponse();
     }
 }

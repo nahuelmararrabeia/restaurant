@@ -120,54 +120,54 @@ public sealed class OrdersController : ControllerBase
     }
 
     [HttpPatch("{id:int}/preparing")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> StartPreparing(
         int id,
         CancellationToken cancellationToken)
     {
-        await _sender.Send(
+        var response = await _sender.Send(
             new StartPreparingOrderCommand(id),
             cancellationToken);
 
-        return NoContent();
+        return Ok(response);
     }
 
     [HttpPatch("{id:int}/ready")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> MarkReady(
         int id,
         CancellationToken cancellationToken)
     {
-        await _sender.Send(
+        var response = await _sender.Send(
             new MarkOrderReadyCommand(id),
             cancellationToken);
 
-        return NoContent();
+        return Ok(response);
     }
 
     [HttpPatch("{id:int}/deliver")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Deliver(
         int id,
         CancellationToken cancellationToken)
     {
-        await _sender.Send(
+        var response = await _sender.Send(
             new DeliverOrderCommand(id),
             cancellationToken);
 
-        return NoContent();
+        return Ok(response);
     }
 
     [HttpPatch("{id:int}/cancel")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Cancel(
         int id,
         CancellationToken cancellationToken)
     {
-        await _sender.Send(
+        var response = await _sender.Send(
             new CancelOrderCommand(id),
             cancellationToken);
 
-        return NoContent();
+        return Ok(response);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MediatR;
+using Restaurant.Application.Orders.Responses;
 
 namespace Restaurant.Application.Orders.Commands.DeliverOrder;
 
-public sealed record DeliverOrderCommand(int Id) : IRequest;
+public sealed record DeliverOrderCommand(int Id) : IRequest<OrderDetailsResponse>;

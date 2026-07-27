@@ -11,7 +11,7 @@ import {
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, Observable } from 'rxjs';
 
 import { Order } from '../../../../shared/domain/orders/order';
 import { OrderStatusBadge } from '../../components/order-status-badge/order-status-badge';
@@ -29,6 +29,12 @@ interface OrderItemActionState {
   itemId: number;
   action: OrderItemAction;
 }
+
+type OrderAction =
+  | 'start-preparing'
+  | 'mark-ready'
+  | 'deliver'
+  | 'cancel';
 
 @Component({
   selector: 'app-order-detail',
@@ -60,6 +66,9 @@ export class OrderDetail implements OnInit {
   readonly addingItem = signal(false);
   readonly actionError = signal<string | null>(null);
   readonly itemAction = signal<OrderItemActionState | null>(null);
+  readonly orderAction = signal<OrderAction | null>(null);
+
+  readonly ORDER_STATUS = ORDER_STATUS;
 
   readonly totalUnits = computed(() => {
     const order = this.order();
@@ -75,9 +84,30 @@ export class OrderDetail implements OnInit {
   });
 
   readonly canEdit = computed(() => {
-    const order = this.order();
+    return (
+      this.order()?.status === ORDER_STATUS.Pending &&
+      !this.isAnyOrderActionRunning()
+    );
+  });
 
-    return order?.status === ORDER_STATUS.Pending;
+  readonly canStartPreparing = computed(
+    () => this.order()?.status === ORDER_STATUS.Pending
+  );
+
+  readonly canMarkReady = computed(
+    () => this.order()?.status === ORDER_STATUS.Preparing
+  );
+
+  readonly canDeliver = computed(
+    () => this.order()?.status === ORDER_STATUS.Ready
+  );
+
+  readonly canCancel = computed(() => {
+    const status = this.order()?.status;
+
+    return status === ORDER_STATUS.Pending
+      || status === ORDER_STATUS.Preparing
+      || status === ORDER_STATUS.Ready;
   });
 
   private orderId: number | null = null;
@@ -238,6 +268,46 @@ export class OrderDetail implements OnInit {
       });
   }
 
+  performOrderAction(action: OrderAction): void {
+    if (
+      this.orderId === null ||
+      this.isAnyOrderActionRunning()
+    ) {
+      return;
+    }
+
+    if (!this.isActionAllowed(action)) {
+      return;
+    }
+
+    if (action === 'cancel') {
+      const confirmed = window.confirm(
+        '¿Confirmás que querés cancelar esta orden?'
+      );
+
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    this.orderAction.set(action);
+    this.actionError.set(null);
+
+    this.getOrderActionRequest(action)
+      .pipe(
+        finalize(() => this.orderAction.set(null)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: order => {
+          this.order.set(order);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.handleOrderActionError(error);
+        }
+      });
+  }
+
   isItemBusy(itemId: number): boolean {
     return this.itemAction()?.itemId === itemId;
   }
@@ -250,6 +320,14 @@ export class OrderDetail implements OnInit {
 
     return current?.itemId === itemId &&
       current.action === action;
+  }
+
+  isOrderActionRunning(action: OrderAction): boolean {
+    return this.orderAction() === action;
+  }
+
+  isAnyOrderActionRunning(): boolean {
+    return this.orderAction() !== null;
   }
 
   clearActionError(): void {
@@ -326,5 +404,87 @@ export class OrderDetail implements OnInit {
     this.actionError.set(
       'No se pudo actualizar la orden. Intentá nuevamente.'
     );
+  }
+
+  private getOrderActionRequest(
+    action: OrderAction
+  ): Observable<Order> {
+    if (this.orderId === null) {
+      throw new Error('Order ID is required.');
+    }
+
+    switch (action) {
+      case 'start-preparing':
+        return this.ordersApi.startPreparing(this.orderId);
+
+      case 'mark-ready':
+        return this.ordersApi.markReady(this.orderId);
+
+      case 'deliver':
+        return this.ordersApi.deliver(this.orderId);
+
+      case 'cancel':
+        return this.ordersApi.cancel(this.orderId);
+    }
+  }
+
+  private isActionAllowed(action: OrderAction): boolean {
+    switch (action) {
+      case 'start-preparing':
+        return this.canStartPreparing();
+
+      case 'mark-ready':
+        return this.canMarkReady();
+
+      case 'deliver':
+        return this.canDeliver();
+
+      case 'cancel':
+        return this.canCancel();
+    }
+  }
+
+  private handleOrderActionError(
+    error: HttpErrorResponse
+  ): void {
+    if (error.status === 404) {
+      this.actionError.set(
+        'La orden ya no existe.'
+      );
+      return;
+    }
+
+    if (error.status === 409) {
+      this.actionError.set(
+        'La orden cambió de estado y esta acción ya no está permitida.'
+      );
+
+      this.reloadOrder();
+      return;
+    }
+
+    this.actionError.set(
+      'No se pudo actualizar el estado de la orden. Intentá nuevamente.'
+    );
+  }
+
+  private reloadOrder(): void {
+    if (this.orderId === null) {
+      return;
+    }
+
+    this.ordersApi
+      .getById(this.orderId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: order => {
+          this.order.set(order);
+        },
+        error: () => {
+          this.actionError.set(
+            'No se pudo volver a cargar la orden.'
+          );
+        }
+      });
   }
 }

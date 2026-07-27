@@ -1,12 +1,14 @@
 ﻿using MediatR;
 using Restaurant.Application.Common.Exceptions;
+using Restaurant.Application.Orders.Mappings;
+using Restaurant.Application.Orders.Responses;
 using Restaurant.Domain.Enums;
 using Restaurant.Domain.Repositories;
 
 namespace Restaurant.Application.Orders.Commands.CancelOrder;
 
 public sealed class CancelOrderCommandHandler
-    : IRequestHandler<CancelOrderCommand>
+    : IRequestHandler<CancelOrderCommand, OrderDetailsResponse>
 {
     private readonly IOrderRepository _orderRepository;
     private readonly ITableRepository _tableRepository;
@@ -19,11 +21,11 @@ public sealed class CancelOrderCommandHandler
         _tableRepository = tableRepository;
     }
 
-    public async Task Handle(
+    public async Task<OrderDetailsResponse> Handle(
         CancelOrderCommand request,
         CancellationToken cancellationToken)
     {
-        var order = await _orderRepository.GetByIdAsync(
+        var order = await _orderRepository.GetByIdWithDetailsAsync(
             request.Id,
             cancellationToken);
 
@@ -45,5 +47,7 @@ public sealed class CancelOrderCommandHandler
         }
 
         await _orderRepository.SaveChangesAsync(cancellationToken);
+
+        return order.ToDetailsResponse();
     }
 }

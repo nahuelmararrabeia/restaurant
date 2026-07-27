@@ -1,11 +1,13 @@
 ﻿using MediatR;
 using Restaurant.Application.Common.Exceptions;
+using Restaurant.Application.Orders.Mappings;
+using Restaurant.Application.Orders.Responses;
 using Restaurant.Domain.Repositories;
 
 namespace Restaurant.Application.Orders.Commands.DeliverOrder;
 
 public sealed class DeliverOrderCommandHandler
-    : IRequestHandler<DeliverOrderCommand>
+    : IRequestHandler<DeliverOrderCommand, OrderDetailsResponse>
 {
     private readonly IOrderRepository _orderRepository;
     private readonly ITableRepository _tableRepository;
@@ -18,11 +20,11 @@ public sealed class DeliverOrderCommandHandler
         _tableRepository = tableRepository;
     }
 
-    public async Task Handle(
+    public async Task<OrderDetailsResponse> Handle(
         DeliverOrderCommand request,
         CancellationToken cancellationToken)
     {
-        var order = await _orderRepository.GetByIdAsync(
+        var order = await _orderRepository.GetByIdWithDetailsAsync(
             request.Id,
             cancellationToken);
 
@@ -41,5 +43,7 @@ public sealed class DeliverOrderCommandHandler
         table.Release();
 
         await _orderRepository.SaveChangesAsync(cancellationToken);
+
+        return order.ToDetailsResponse();
     }
 }

@@ -16,9 +16,9 @@ export class OrdersApi {
 
   private readonly baseUrl = `${environment.apiUrl}/Orders`;
 
-  getActive(): Observable<Order[]> {
+  getAll(): Observable<Order[]> {
     return this.http.get<Order[]>(
-      `${this.baseUrl}?status=1`
+      `${this.baseUrl}`
     );
   }
 
@@ -65,30 +65,23 @@ export class OrdersApi {
     );
   }
 
-  sendToKitchen(orderId: number): Observable<Order> {
-    return this.http.patch<Order>(
-      `${this.baseUrl}/${orderId}/send`,
-      {}
-    );
-  }
-
-  markAsPreparing(orderId: number): Observable<Order> {
+  startPreparing(orderId: number): Observable<Order> {
     return this.http.patch<Order>(
       `${this.baseUrl}/${orderId}/preparing`,
       {}
     );
   }
 
-  markAsReady(orderId: number): Observable<Order> {
+  markReady(orderId: number): Observable<Order> {
     return this.http.patch<Order>(
       `${this.baseUrl}/${orderId}/ready`,
       {}
     );
   }
 
-  markAsServed(orderId: number): Observable<Order> {
+  deliver(orderId: number): Observable<Order> {
     return this.http.patch<Order>(
-      `${this.baseUrl}/${orderId}/served`,
+      `${this.baseUrl}/${orderId}/deliver`,
       {}
     );
   }
