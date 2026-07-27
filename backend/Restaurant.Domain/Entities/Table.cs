@@ -12,6 +12,8 @@ namespace Restaurant.Domain.Entities
 
         public TableStatus Status { get; private set; }
 
+        public ICollection<Order> Orders { get; private set; } = new List<Order>();
+
         private Table() { }
 
         public Table(int number, int capacity)

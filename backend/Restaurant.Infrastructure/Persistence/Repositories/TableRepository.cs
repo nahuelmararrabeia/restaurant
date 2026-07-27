@@ -19,6 +19,10 @@ public class TableRepository : ITableRepository
     {
         return await _context.Tables
             .AsNoTracking()
+            .Include(x => x.Orders.Where(
+                order =>
+                    order.Status != OrderStatus.Cancelled &&
+                    order.Status != OrderStatus.Delivered))
             .OrderBy(x => x.Number)
             .ToListAsync(cancellationToken);
     }
@@ -35,6 +39,19 @@ public class TableRepository : ITableRepository
     public async Task<Table?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await _context.Tables
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task<Table?> GetByIdWithActiveOrderAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Tables
+            .AsNoTracking()
+            .Include(x => x.Orders.Where(
+                order =>
+                    order.Status != OrderStatus.Cancelled &&
+                    order.Status != OrderStatus.Delivered))
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 

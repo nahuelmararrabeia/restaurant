@@ -14,6 +14,7 @@ export class TableCard {
   readonly table = input.required<RestaurantTable>();
   readonly canDelete = input.required<boolean>();
   readonly isActionInProgress = input.required<boolean>();
+  readonly onClickCreateOrder = output<void>();
   readonly onClickDelete = output<void>();
   readonly onClickEnable = output<void>();
   readonly onClickDisable = output<void>();

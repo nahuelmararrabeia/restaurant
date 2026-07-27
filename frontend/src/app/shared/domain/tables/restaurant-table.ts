@@ -5,4 +5,5 @@ export interface RestaurantTable {
   number: number;
   capacity: number;
   status: TableStatus;
+  activeOrderId: number | null;
 }

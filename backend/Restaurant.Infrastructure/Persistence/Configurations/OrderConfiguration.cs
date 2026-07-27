@@ -30,7 +30,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasMaxLength(100);
 
         builder.HasOne(x => x.Table)
-            .WithMany()
+            .WithMany(x => x.Orders)
             .HasForeignKey(x => x.TableId)
             .OnDelete(DeleteBehavior.Restrict);
 

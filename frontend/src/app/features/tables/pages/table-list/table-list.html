@@ -39,6 +39,7 @@
           [table]="table"
           [canDelete]="canDelete(table)"
           [isActionInProgress]="isActionInProgress(table.id)"
+          (onClickCreateOrder)="createOrder(table)"
           (onClickDelete)="deleteTable(table)"
           (onClickEnable)="enableTable(table)"
           (onClickDisable)="disableTable(table)"

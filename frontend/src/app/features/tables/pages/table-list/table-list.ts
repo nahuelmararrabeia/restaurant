@@ -6,13 +6,14 @@ import {
   OnInit,
   signal
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { RestaurantTable } from '../../../../shared/domain/tables/restaurant-table';
-import { TableStatusBadge } from '../../components/table-status-badge/table-status-badge';
 import { TablesApi } from '../../services/tables-api';
+import { OrdersApi } from '../../../orders/services/orders-api';
 import { SectionHeader } from '../../../../shared/components/section-header/section-header';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
@@ -34,6 +35,8 @@ import { TableCard } from '../../components/table-card/table-card';
 })
 export class TableList implements OnInit {
   private readonly tablesApi = inject(TablesApi);
+  private readonly ordersApi = inject(OrdersApi);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly tables = signal<RestaurantTable[]>([]);
@@ -65,6 +68,41 @@ export class TableList implements OnInit {
           this.error.set(
             'The tables could not be loaded.'
           );
+        }
+      });
+  }
+
+  createOrder(table: RestaurantTable): void {
+    if (
+      table.status !== 'Available' ||
+      this.actionInProgress() !== null
+    ) {
+      return;
+    }
+
+    this.actionInProgress.set(table.id);
+    this.actionError.set(null);
+
+    this.ordersApi
+      .create({ tableId: table.id })
+      .pipe(
+        finalize(() => this.actionInProgress.set(null)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: order => {
+          void this.router.navigate(['/orders', order.id]);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.actionError.set(
+            error.status === 409
+              ? `Table ${table.number} is no longer available.`
+              : `An order could not be created for table ${table.number}.`
+          );
+
+          if (error.status === 409) {
+            this.loadTables();
+          }
         }
       });
   }

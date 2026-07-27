@@ -6,4 +6,5 @@ public sealed record TableResponse(
     int Id,
     int Number,
     int Capacity,
-    TableStatus Status);
+    TableStatus Status,
+    int? ActiveOrderId);

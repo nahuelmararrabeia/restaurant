@@ -19,7 +19,7 @@ public sealed class GetTableByIdQueryHandler
         GetTableByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var table = await _tableRepository.GetByIdAsync(
+        var table = await _tableRepository.GetByIdWithActiveOrderAsync(
             request.Id,
             cancellationToken);
 
@@ -30,6 +30,7 @@ public sealed class GetTableByIdQueryHandler
             table.Id,
             table.Number,
             table.Capacity,
-            table.Status);
+            table.Status,
+            table.Orders.FirstOrDefault()?.Id);
     }
 }

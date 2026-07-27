@@ -7,6 +7,7 @@ public interface ITableRepository
     Task<List<Table>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<List<Table>> GetAvailableAsync(CancellationToken cancellationToken = default);
     Task<Table?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<Table?> GetByIdWithActiveOrderAsync(int id, CancellationToken cancellationToken = default);
     Task<bool> ExistsByNumberAsync(int number, CancellationToken cancellationToken = default);
 
     Task AddAsync(Table table, CancellationToken cancellationToken = default);

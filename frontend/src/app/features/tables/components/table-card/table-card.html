@@ -22,6 +22,28 @@
     </p>
   </div>
 
+  @if (table().activeOrderId; as orderId) {
+    <a
+      [routerLink]="['/orders', orderId]"
+      class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
+    >
+      Manage order
+    </a>
+  } @else if (table().status === 'Available') {
+    <button
+      type="button"
+      class="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+      [disabled]="isActionInProgress()"
+      (click)="onClickCreateOrder.emit()"
+    >
+      @if (isActionInProgress()) {
+        Creating order...
+      } @else {
+        Create order
+      }
+    </button>
+  }
+
   <div class="mt-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 pt-4">
     <a
       [routerLink]="['/tables', table().id, 'edit']"
