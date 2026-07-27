@@ -1,0 +1,57 @@
+<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-lg font-semibold text-slate-900">
+        Tables
+      </h2>
+
+      <p class="mt-1 text-sm text-slate-500">
+        Current table availability.
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    @for (table of tables(); track table.id) {
+      <article
+        class="rounded-lg border p-4"
+        [ngClass]="{
+          'border-green-200 bg-green-50': table.status === 'available',
+          'border-red-200 bg-red-50': table.status === 'occupied',
+          'border-amber-200 bg-amber-50': table.status === 'reserved',
+          'border-slate-200 bg-slate-100': table.status === 'disabled'
+        }"
+      >
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-500">
+              Table
+            </p>
+
+            <p class="mt-1 text-2xl font-bold text-slate-900">
+              {{ table.number }}
+            </p>
+          </div>
+
+          <span
+            class="h-3 w-3 rounded-full"
+            [ngClass]="{
+              'bg-green-500': table.status === 'available',
+              'bg-red-500': table.status === 'occupied',
+              'bg-amber-500': table.status === 'reserved',
+              'bg-slate-400': table.status === 'disabled'
+            }"
+          ></span>
+        </div>
+
+        <p class="mt-4 text-sm text-slate-600">
+          Capacity: {{ table.capacity }}
+        </p>
+
+        <p class="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          {{ table.status }}
+        </p>
+      </article>
+    }
+  </div>
+</div>

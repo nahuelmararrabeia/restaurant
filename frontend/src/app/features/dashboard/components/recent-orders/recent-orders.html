@@ -1,0 +1,93 @@
+<section
+  class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+>
+  <header
+    class="flex items-center justify-between border-b border-slate-200 px-6 py-5"
+  >
+    <div>
+      <h2 class="text-lg font-semibold text-slate-900">
+        Recent orders
+      </h2>
+
+      <p class="mt-1 text-sm text-slate-500">
+        Latest restaurant activity.
+      </p>
+    </div>
+
+    <a
+      routerLink="/orders"
+      class="text-sm font-semibold text-blue-600 transition-colors hover:text-blue-700"
+    >
+      View all
+    </a>
+  </header>
+
+  @if (orders().length === 0) {
+    <div class="px-6 py-12 text-center">
+      <p class="text-sm font-medium text-slate-700">
+        No recent orders
+      </p>
+
+      <p class="mt-1 text-sm text-slate-500">
+        New orders will appear here.
+      </p>
+    </div>
+  } @else {
+    <ul class="divide-y divide-slate-100">
+      @for (order of orders(); track order.id) {
+        <li>
+          <button
+            type="button"
+            class="flex w-full items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-slate-50"
+            (click)="orderSelected.emit(order.id)"
+          >
+            <div
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-slate-700"
+            >
+              #{{ order.id }}
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-3">
+                <p class="truncate font-semibold text-slate-900">
+                  Table {{ order.tableNumber }}
+                </p>
+
+                <p class="shrink-0 font-semibold text-slate-900">
+                  {{
+                    order.total
+                      | currency: 'ARS' : 'symbol-narrow' : '1.2-2'
+                  }}
+                </p>
+              </div>
+
+              <div class="mt-1 flex items-center justify-between gap-3">
+                <span
+                  class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                  [ngClass]="{
+                    'bg-amber-100 text-amber-700':
+                      order.status === 'pending',
+                    'bg-blue-100 text-blue-700':
+                      order.status === 'preparing',
+                    'bg-green-100 text-green-700':
+                      order.status === 'ready',
+                    'bg-slate-100 text-slate-600':
+                      order.status === 'delivered',
+                    'bg-red-100 text-red-700':
+                      order.status === 'cancelled'
+                  }"
+                >
+                  {{ order.status }}
+                </span>
+
+                <time class="shrink-0 text-xs text-slate-500">
+                  {{ order.orderedAt | date: 'shortTime' }}
+                </time>
+              </div>
+            </div>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>
