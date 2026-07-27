@@ -3,8 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import { CreateProductRequest } from './models/create-product-request';
-import { UpdateProductRequest } from './models/update-product-request';
+import { CreateProductRequest } from '../models/create-product-request';
+import { UpdateProductRequest } from '../models/update-product-request';
 import { Product } from '../../../shared/domain/products/product';
 
 @Injectable({

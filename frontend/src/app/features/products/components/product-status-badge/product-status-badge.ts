@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
-  selector: 'app-product-status-badge',
+  selector: 'product-status-badge',
   standalone: true,
   imports: [],
   templateUrl: './product-status-badge.html',

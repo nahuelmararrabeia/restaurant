@@ -6,5 +6,11 @@ export const PRODUCTS_ROUTES: Routes = [
     loadComponent: () =>
       import('./pages/product-list/product-list')
         .then(component => component.ProductList)
+  },
+  {
+    path: 'new',
+    loadComponent: () =>
+      import('./pages/create-product/create-product')
+        .then(component => component.CreateProduct)
   }
 ];
