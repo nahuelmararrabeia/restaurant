@@ -19,11 +19,18 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { SubsectionHeader } from '../../../../shared/components/subsection-header/subsection-header';
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-create-order',
   standalone: true,
-  imports: [RouterLink, SubsectionHeader, ErrorState, LoadingState],
+  imports: [
+    RouterLink,
+    SubsectionHeader,
+    ErrorState,
+    LoadingState,
+    NgIcon
+  ],
   templateUrl: './create-order.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

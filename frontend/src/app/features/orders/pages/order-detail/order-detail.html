@@ -36,7 +36,7 @@
     @if (actionError()) {
       <error-state
         [text]="actionError()"
-        buttonText="×"
+        buttonIcon="heroXMark"
         (onClickButton)="clearActionError()"
       />
     }
@@ -62,7 +62,7 @@
           <empty-state
             title="The order is empty"
             subtitle="No products have been added yet."
-            icon="🍽️"
+            icon="heroCake"
             [compact]="true"
           />
         } @else {

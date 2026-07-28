@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgIcon } from '@ng-icons/core';
 
 import { RestaurantTable } from '../../../../shared/domain/tables/restaurant-table';
 import { TablesApi } from '../../services/tables-api';
@@ -33,7 +34,8 @@ import {
     SectionHeader,
     LoadingState,
     ErrorState,
-    EmptyState
+    EmptyState,
+    NgIcon
   ],
   templateUrl: './table-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush

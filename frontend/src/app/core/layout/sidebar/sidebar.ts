@@ -2,12 +2,14 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NAVIGATION } from './navigation';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
     imports: [
         CommonModule,
+        NgIcon,
         RouterLink,
         RouterLinkActive
     ],

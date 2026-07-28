@@ -9,7 +9,7 @@
   @if (actionError()) {
     <error-state
       [text]="actionError()"
-      buttonText="×"
+      buttonIcon="heroXMark"
       (onClickButton)="clearActionError()"
 
     />
@@ -49,12 +49,11 @@
         class="flex cursor-pointer list-none items-center justify-between px-5 py-4 font-semibold text-slate-900 transition hover:bg-slate-50"
       >
         <span>Table list ({{ tables().length }})</span>
-        <span
-          class="text-slate-400 transition-transform group-open:rotate-180"
+        <ng-icon
+          name="heroChevronDown"
+          class="text-lg text-slate-400 transition-transform group-open:rotate-180"
           aria-hidden="true"
-        >
-          &#x25BC;
-        </span>
+        />
       </summary>
 
       <div

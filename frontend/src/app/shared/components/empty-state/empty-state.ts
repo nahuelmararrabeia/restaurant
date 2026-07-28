@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'empty-state',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, NgIcon],
   templateUrl: './empty-state.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

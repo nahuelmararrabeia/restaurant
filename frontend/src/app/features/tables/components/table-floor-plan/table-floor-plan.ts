@@ -7,6 +7,7 @@ import {
   signal
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NgIcon } from '@ng-icons/core';
 
 import { RestaurantTable } from '../../../../shared/domain/tables/restaurant-table';
 
@@ -24,7 +25,7 @@ interface Position {
 @Component({
   selector: 'table-floor-plan',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, NgIcon],
   templateUrl: './table-floor-plan.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

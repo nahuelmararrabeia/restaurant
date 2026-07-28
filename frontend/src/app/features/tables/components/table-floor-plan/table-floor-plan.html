@@ -10,12 +10,11 @@
         <h2 class="font-semibold text-slate-900">
           Dining room layout
         </h2>
-        <span
-          class="text-xs text-slate-400 transition-transform group-open:rotate-180"
+        <ng-icon
+          name="heroChevronDown"
+          class="text-base text-slate-400 transition-transform group-open:rotate-180"
           aria-hidden="true"
-        >
-          &#x25BC;
-        </span>
+        />
       </div>
       <p class="mt-1 text-sm text-slate-500">
         Select a table to see its actions or use the move button to reposition it.
@@ -45,7 +44,7 @@
   <div class="bg-slate-100 p-4 sm:p-6">
     <div
       #floor
-      class="relative h-[420px] overflow-hidden rounded-xl border-2 border-slate-300 bg-white shadow-inner sm:h-[520px]"
+      class="relative h-105 overflow-hidden rounded-xl border-2 border-slate-300 bg-white shadow-inner sm:h-130"
       style="
         background-image:
           linear-gradient(to right, rgb(226 232 240 / 0.55) 1px, transparent 1px),
@@ -106,7 +105,7 @@
             (pointerup)="finishDragging($event, table, floor)"
             (pointercancel)="cancelDragging(table.id)"
           >
-            &#x2725;
+            <ng-icon name="heroArrowsPointingOut" class="text-base" />
           </button>
 
           @if (selectedTableId() === table.id) {
@@ -117,45 +116,63 @@
               @if (table.activeOrderId; as orderId) {
                 <a
                   [routerLink]="['/orders', orderId]"
-                  class="block rounded-md px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
-                >Manage order</a>
+                  class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                >
+                  <ng-icon name="heroClipboardDocumentList" class="text-lg" />
+                  <span>Manage order</span>
+                </a>
               } @else if (table.status === 'Available') {
                 <button
                   type="button"
-                  class="w-full rounded-md px-3 py-2 text-left text-sm font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+                  class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
                   [disabled]="actionInProgressId() !== null"
                   (click)="createOrder.emit(table)"
-                >Create order</button>
+                >
+                  <ng-icon name="heroPlusCircle" class="text-lg" />
+                  <span>Create order</span>
+                </button>
               }
 
               <a
                 [routerLink]="['/tables', table.id, 'edit']"
-                class="block rounded-md px-3 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-50"
-              >Edit</a>
+                class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-50"
+              >
+                <ng-icon name="heroPencilSquare" class="text-lg" />
+                <span>Edit</span>
+              </a>
 
               @if (table.status === 'Disabled') {
                 <button
                   type="button"
-                  class="w-full rounded-md px-3 py-2 text-left text-sm font-semibold text-green-600 hover:bg-green-50 disabled:opacity-50"
+                  class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold text-green-600 hover:bg-green-50 disabled:opacity-50"
                   [disabled]="actionInProgressId() !== null"
                   (click)="enableTable.emit(table)"
-                >Enable</button>
+                >
+                  <ng-icon name="heroCheckCircle" class="text-lg" />
+                  <span>Enable</span>
+                </button>
               } @else {
                 <button
                   type="button"
-                  class="w-full rounded-md px-3 py-2 text-left text-sm font-semibold text-amber-600 hover:bg-amber-50 disabled:opacity-50"
+                  class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold text-amber-600 hover:bg-amber-50 disabled:opacity-50"
                   [disabled]="actionInProgressId() !== null"
                   (click)="disableTable.emit(table)"
-                >Disable</button>
+                >
+                  <ng-icon name="heroNoSymbol" class="text-lg" />
+                  <span>Disable</span>
+                </button>
               }
 
               @if (table.status === 'Available' || table.status === 'Disabled') {
                 <button
                   type="button"
-                  class="w-full rounded-md px-3 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
+                  class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
                   [disabled]="actionInProgressId() !== null"
                   (click)="deleteTable.emit(table)"
-                >Delete</button>
+                >
+                  <ng-icon name="heroTrash" class="text-lg" />
+                  <span>Delete</span>
+                </button>
               }
             </div>
           }

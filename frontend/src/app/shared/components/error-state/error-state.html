@@ -5,13 +5,19 @@
     {{ text() }}
     </p>
 
-    @if (buttonText() && onClickButton) {
+    @if ((buttonText() || buttonIcon()) && onClickButton) {
         <button
             type="button"
-            class="mt-3 text-sm font-semibold text-red-700 underline"
+            class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-red-700"
+            [attr.aria-label]="buttonText() || 'Close'"
             (click)="onClickButton.emit()"
         >
-        {{ buttonText() }}
+          @if (buttonIcon()) {
+            <ng-icon [name]="buttonIcon()!" class="text-lg" />
+          }
+          @if (buttonText()) {
+            <span class="underline">{{ buttonText() }}</span>
+          }
         </button>
     }
 </div>

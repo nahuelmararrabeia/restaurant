@@ -4,7 +4,25 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { provideIcons } from '@ng-icons/core';
-import { heroBars3, heroClipboardDocumentList, heroCurrencyDollar, heroHome, heroShoppingBag, heroTableCells, heroXMark } from '@ng-icons/heroicons/outline';
+import {
+  heroArrowsPointingOut,
+  heroBars3,
+  heroBuildingStorefront,
+  heroCake,
+  heroCheck,
+  heroCheckCircle,
+  heroChevronDown,
+  heroClipboardDocumentList,
+  heroCurrencyDollar,
+  heroHome,
+  heroNoSymbol,
+  heroPencilSquare,
+  heroPlusCircle,
+  heroShoppingBag,
+  heroTableCells,
+  heroTrash,
+  heroXMark
+} from '@ng-icons/heroicons/outline';
 import { registerLocaleData } from '@angular/common';
 import localeEsAr from '@angular/common/locales/es-AR';
 
@@ -26,7 +44,17 @@ export const appConfig: ApplicationConfig = {
       heroClipboardDocumentList,
       heroCurrencyDollar,
       heroBars3,
-      heroXMark
+      heroBuildingStorefront,
+      heroXMark,
+      heroChevronDown,
+      heroArrowsPointingOut,
+      heroCake,
+      heroCheck,
+      heroCheckCircle,
+      heroNoSymbol,
+      heroPencilSquare,
+      heroPlusCircle,
+      heroTrash
     })
   ]
 };

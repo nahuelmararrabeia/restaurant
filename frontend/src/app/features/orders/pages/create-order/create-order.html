@@ -17,7 +17,7 @@
   @if (createError()) {
     <error-state
       [text]="createError()"
-      buttonText="×"
+      buttonIcon="heroXMark"
       (onClickButton)="createError()"
     />
   }
@@ -29,10 +29,10 @@
       class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center"
     >
       <div
-        class="mx-auto flex size-12 items-center justify-center rounded-full bg-slate-100 text-xl"
+        class="mx-auto flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-500"
         aria-hidden="true"
       >
-        🪑
+        <ng-icon name="heroTableCells" class="text-2xl" />
       </div>
 
       <h2 class="mt-4 text-base font-semibold text-slate-900">
@@ -89,10 +89,10 @@
           >
             @if (isSelected(table.id)) {
               <span
-                class="absolute right-3 top-3 flex size-6 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white"
+                class="absolute right-3 top-3 flex size-6 items-center justify-center rounded-full bg-slate-900 text-white"
                 aria-hidden="true"
               >
-                ✓
+                <ng-icon name="heroCheck" class="text-sm" />
               </span>
             }
 
