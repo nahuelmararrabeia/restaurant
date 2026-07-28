@@ -41,7 +41,11 @@ public sealed class AddOrderItemCommandHandler
         if (!product.IsAvailable)
             throw new BusinessException($"Product {request.ProductId} is not available.");
 
-        order.AddItem(product.Id, request.Quantity, product.Price);
+        order.AddItem(
+            product.Id,
+            request.Quantity,
+            product.Price,
+            request.Notes);
 
         await _orderRepository.SaveChangesAsync(cancellationToken);
 

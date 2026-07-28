@@ -13,7 +13,8 @@ public static class OrderItemMappings
             item.Product?.Name ?? string.Empty,
             item.Quantity,
             item.UnitPrice,
-            item.Quantity * item.UnitPrice
+            item.Quantity * item.UnitPrice,
+            item.Notes
         );
     }
 }

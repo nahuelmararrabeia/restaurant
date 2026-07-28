@@ -67,10 +67,13 @@ public sealed class OrderHandlerTests
             .Returns(new Product { Id = 2, Name = "Coffee", Price = 900 });
 
         var result = await new AddOrderItemCommandHandler(_orders, _products)
-            .Handle(new AddOrderItemCommand(1, 2, 3), CancellationToken.None);
+            .Handle(
+                new AddOrderItemCommand(1, 2, 3, "No sugar"),
+                CancellationToken.None);
 
         var item = Assert.Single(result.Items);
         Assert.Equal(3, item.Quantity);
+        Assert.Equal("No sugar", item.Notes);
         Assert.Equal(2700, result.Total);
     }
 
@@ -83,9 +86,11 @@ public sealed class OrderHandlerTests
             .Returns(order);
 
         var result = await new UpdateOrderItemCommandHandler(_orders).Handle(
-            new UpdateOrderItemCommand(1, 0, 4), CancellationToken.None);
+            new UpdateOrderItemCommand(1, 0, 4, "Extra hot"),
+            CancellationToken.None);
 
         Assert.Equal(4, Assert.Single(result.Items).Quantity);
+        Assert.Equal("Extra hot", Assert.Single(result.Items).Notes);
         Assert.Equal(3600, result.Total);
     }
 

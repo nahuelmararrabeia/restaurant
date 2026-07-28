@@ -10,5 +10,6 @@ public sealed class AddOrderItemCommandValidator
         RuleFor(x => x.OrderId).GreaterThan(0);
         RuleFor(x => x.ProductId).GreaterThan(0);
         RuleFor(x => x.Quantity).GreaterThan(0);
+        RuleFor(x => x.Notes).MaximumLength(250);
     }
 }

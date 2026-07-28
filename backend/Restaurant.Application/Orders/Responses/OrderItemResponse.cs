@@ -8,4 +8,5 @@ public sealed record OrderItemResponse(
     string ProductName,
     int Quantity,
     decimal UnitPrice,
-    decimal SubTotal);
+    decimal SubTotal,
+    string? Notes);

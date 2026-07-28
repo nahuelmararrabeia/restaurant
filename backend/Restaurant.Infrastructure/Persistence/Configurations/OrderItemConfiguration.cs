@@ -19,6 +19,9 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
             .HasPrecision(18, 2)
             .IsRequired();
 
+        builder.Property(x => x.Notes)
+            .HasMaxLength(250);
+
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(100);
 

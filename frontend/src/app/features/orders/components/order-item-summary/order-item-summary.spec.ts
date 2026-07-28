@@ -11,7 +11,7 @@ describe('OrderItemSummary', () => {
       productName: 'Pizza',
       unitPrice: 12000,
       quantity: 2,
-      notes: null,
+      notes: 'No onions',
       subtotal: 24000
     });
     fixture.componentRef.setInput('canEdit', true);
@@ -25,6 +25,7 @@ describe('OrderItemSummary', () => {
     fixture.componentInstance.remove.emit();
 
     expect(fixture.nativeElement.textContent).toContain('Pizza');
+    expect(fixture.nativeElement.textContent).toContain('No onions');
     expect(quantityChange).toHaveBeenCalledWith(1);
     expect(remove).toHaveBeenCalledOnce();
   });

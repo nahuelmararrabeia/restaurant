@@ -16,12 +16,19 @@ namespace Restaurant.Domain.Entities
 
         public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
 
-        public void AddItem(int productId, int quantity, decimal unitPrice)
+        public void AddItem(
+            int productId,
+            int quantity,
+            decimal unitPrice,
+            string? notes = null)
         {
             if (Status is OrderStatus.Delivered or OrderStatus.Cancelled)
                 throw new BusinessException("Cannot modify a closed order.");
 
-            var existingItem = Items.FirstOrDefault(x => x.ProductId == productId);
+            var normalizedNotes = NormalizeNotes(notes);
+            var existingItem = Items.FirstOrDefault(x =>
+                x.ProductId == productId &&
+                x.Notes == normalizedNotes);
 
             if (existingItem is null)
             {
@@ -29,7 +36,8 @@ namespace Restaurant.Domain.Entities
                 {
                     ProductId = productId,
                     Quantity = quantity,
-                    UnitPrice = unitPrice
+                    UnitPrice = unitPrice,
+                    Notes = normalizedNotes
                 });
             }
             else
@@ -40,7 +48,10 @@ namespace Restaurant.Domain.Entities
             RecalculateTotal();
         }
 
-        public void UpdateItemQuantity(int itemId, int quantity)
+        public void UpdateItem(
+            int itemId,
+            int quantity,
+            string? notes = null)
         {
             if (Status is OrderStatus.Delivered or OrderStatus.Cancelled)
                 throw new BusinessException("Cannot modify a closed order.");
@@ -53,6 +64,7 @@ namespace Restaurant.Domain.Entities
             }
 
             existingItem.Quantity = quantity;
+            existingItem.Notes = NormalizeNotes(notes);
 
             RecalculateTotal();
         }
@@ -108,6 +120,17 @@ namespace Restaurant.Domain.Entities
         private void RecalculateTotal()
         {
             Total = Items.Sum(x => x.Quantity * x.UnitPrice);
+        }
+
+        private static string? NormalizeNotes(string? notes)
+        {
+            var normalized = notes?.Trim();
+
+            if (normalized?.Length > 250)
+                throw new BusinessException(
+                    "Order item notes cannot exceed 250 characters.");
+
+            return string.IsNullOrEmpty(normalized) ? null : normalized;
         }
     }
 }

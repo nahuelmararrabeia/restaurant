@@ -76,14 +76,47 @@ public sealed class OrderTests
     }
 
     [Fact]
+    public void AddItem_persists_normalized_notes()
+    {
+        var order = new Order();
+
+        order.AddItem(10, 2, 500, "  No onions  ");
+
+        Assert.Equal("No onions", Assert.Single(order.Items).Notes);
+    }
+
+    [Fact]
+    public void AddItem_keeps_same_product_with_different_notes_separate()
+    {
+        var order = new Order();
+
+        order.AddItem(10, 1, 500, "No onions");
+        order.AddItem(10, 1, 500, "Extra onions");
+
+        Assert.Equal(2, order.Items.Count);
+    }
+
+    [Fact]
     public void UpdateItemQuantity_changes_quantity_and_total()
     {
         var order = OrderWithItem();
 
-        order.UpdateItemQuantity(1, 4);
+        order.UpdateItem(1, 4);
 
         Assert.Equal(4, Assert.Single(order.Items).Quantity);
         Assert.Equal(2000, order.Total);
+    }
+
+    [Fact]
+    public void UpdateItem_changes_quantity_and_notes()
+    {
+        var order = OrderWithItem();
+
+        order.UpdateItem(1, 4, "  Well done  ");
+
+        var item = Assert.Single(order.Items);
+        Assert.Equal(4, item.Quantity);
+        Assert.Equal("Well done", item.Notes);
     }
 
     [Fact]
@@ -92,7 +125,7 @@ public sealed class OrderTests
         var order = new Order();
 
         Assert.Throws<BusinessException>(
-            () => order.UpdateItemQuantity(99, 2));
+            () => order.UpdateItem(99, 2));
     }
 
     [Fact]
@@ -124,7 +157,7 @@ public sealed class OrderTests
 
         Assert.Throws<BusinessException>(() => order.AddItem(2, 1, 100));
         Assert.Throws<BusinessException>(
-            () => order.UpdateItemQuantity(1, 2));
+            () => order.UpdateItem(1, 2));
         Assert.Throws<BusinessException>(() => order.RemoveItem(1));
     }
 

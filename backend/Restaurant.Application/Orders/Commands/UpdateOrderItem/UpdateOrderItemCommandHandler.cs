@@ -28,7 +28,10 @@ public sealed class UpdateOrderItemCommandHandler
         if (order is null)
             throw new NotFoundException($"Order {request.OrderId} was not found.");
 
-        order.UpdateItemQuantity(request.ItemId, request.Quantity);
+        order.UpdateItem(
+            request.ItemId,
+            request.Quantity,
+            request.Notes);
 
         await _orderRepository.SaveChangesAsync(cancellationToken);
 

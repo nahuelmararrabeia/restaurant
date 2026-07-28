@@ -100,7 +100,8 @@ public sealed class OrdersController : ControllerBase
             new UpdateOrderItemCommand(
                 id,
                 orderItemId,
-                command.Quantity),
+                command.Quantity,
+                command.Notes),
             cancellationToken);
 
         return Ok(response);
