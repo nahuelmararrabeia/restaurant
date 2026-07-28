@@ -12,6 +12,10 @@ namespace Restaurant.Domain.Entities
 
         public TableStatus Status { get; private set; }
 
+        public double? PositionX { get; private set; }
+
+        public double? PositionY { get; private set; }
+
         public ICollection<Order> Orders { get; private set; } = new List<Order>();
 
         private Table() { }
@@ -27,6 +31,20 @@ namespace Restaurant.Domain.Entities
         {
             Number = number;
             Capacity = capacity;
+        }
+
+        public void SetPosition(double positionX, double positionY)
+        {
+            if (
+                positionX is < 0 or > 100 ||
+                positionY is < 0 or > 100)
+            {
+                throw new BusinessException(
+                    "Table position must be between 0 and 100.");
+            }
+
+            PositionX = positionX;
+            PositionY = positionY;
         }
 
         public void Enable()

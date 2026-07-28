@@ -31,20 +31,47 @@
       [buttonLink]="['/tables', 'new']"
     />
   } @else {
-    <div
-      class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+    <table-floor-plan
+      [tables]="tables()"
+      [savingTableId]="positionSavingId()"
+      [actionInProgressId]="actionInProgress()"
+      (positionChange)="updateTablePosition($event)"
+      (createOrder)="createOrder($event)"
+      (enableTable)="enableTable($event)"
+      (disableTable)="disableTable($event)"
+      (deleteTable)="deleteTable($event)"
+    />
+
+    <details
+      class="group mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
     >
-      @for (table of tables(); track table.id) {
-        <table-card
-          [table]="table"
-          [canDelete]="canDelete(table)"
-          [isActionInProgress]="isActionInProgress(table.id)"
-          (onClickCreateOrder)="createOrder(table)"
-          (onClickDelete)="deleteTable(table)"
-          (onClickEnable)="enableTable(table)"
-          (onClickDisable)="disableTable(table)"
-        />        
-      }
-    </div>
+      <summary
+        class="flex cursor-pointer list-none items-center justify-between px-5 py-4 font-semibold text-slate-900 transition hover:bg-slate-50"
+      >
+        <span>Table list ({{ tables().length }})</span>
+        <span
+          class="text-slate-400 transition-transform group-open:rotate-180"
+          aria-hidden="true"
+        >
+          &#x25BC;
+        </span>
+      </summary>
+
+      <div
+        class="grid gap-4 border-t border-slate-200 p-4 sm:grid-cols-2 xl:grid-cols-3"
+      >
+        @for (table of tables(); track table.id) {
+          <table-card
+            [table]="table"
+            [canDelete]="canDelete(table)"
+            [isActionInProgress]="isActionInProgress(table.id)"
+            (onClickCreateOrder)="createOrder(table)"
+            (onClickDelete)="deleteTable(table)"
+            (onClickEnable)="enableTable(table)"
+            (onClickDisable)="disableTable(table)"
+          />
+        }
+      </div>
+    </details>
   }
 </section>

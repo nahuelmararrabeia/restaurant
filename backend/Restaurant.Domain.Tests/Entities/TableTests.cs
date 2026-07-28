@@ -29,6 +29,32 @@ public sealed class TableTests
     }
 
     [Fact]
+    public void SetPosition_stores_normalized_coordinates()
+    {
+        var table = new Table(1, 4);
+
+        table.SetPosition(25.5, 70.25);
+
+        Assert.Equal(25.5, table.PositionX);
+        Assert.Equal(70.25, table.PositionY);
+    }
+
+    [Theory]
+    [InlineData(-1, 50)]
+    [InlineData(101, 50)]
+    [InlineData(50, -1)]
+    [InlineData(50, 101)]
+    public void SetPosition_rejects_coordinates_outside_floor(
+        double positionX,
+        double positionY)
+    {
+        var table = new Table(1, 4);
+
+        Assert.Throws<BusinessException>(
+            () => table.SetPosition(positionX, positionY));
+    }
+
+    [Fact]
     public void Disable_and_enable_change_availability()
     {
         var table = new Table(1, 4);

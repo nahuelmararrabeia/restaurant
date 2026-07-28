@@ -24,6 +24,10 @@ public class TableConfiguration : IEntityTypeConfiguration<Table>
         builder.Property(x => x.Status)
             .IsRequired();
 
+        builder.Property(x => x.PositionX);
+
+        builder.Property(x => x.PositionY);
+
         builder.Property(x => x.CreatedBy)
             .HasMaxLength(100);
 

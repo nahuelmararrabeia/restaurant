@@ -19,12 +19,17 @@ import { LoadingState } from '../../../../shared/components/loading-state/loadin
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
 import { TableCard } from '../../components/table-card/table-card';
+import {
+  TableFloorPlan,
+  TablePositionChange
+} from '../../components/table-floor-plan/table-floor-plan';
 
 @Component({
   selector: 'app-table-list',
   standalone: true,
   imports: [
     TableCard,
+    TableFloorPlan,
     SectionHeader,
     LoadingState,
     ErrorState,
@@ -44,6 +49,7 @@ export class TableList implements OnInit {
   readonly error = signal<string | null>(null);
 
   readonly actionInProgress = signal<number | null>(null);
+  readonly positionSavingId = signal<number | null>(null);
   readonly actionError = signal<string | null>(null);
 
   ngOnInit(): void {
@@ -103,6 +109,45 @@ export class TableList implements OnInit {
           if (error.status === 409) {
             this.loadTables();
           }
+        }
+      });
+  }
+
+  updateTablePosition(change: TablePositionChange): void {
+    if (this.positionSavingId() !== null) {
+      return;
+    }
+
+    const previousX = change.table.positionX;
+    const previousY = change.table.positionY;
+
+    this.positionSavingId.set(change.table.id);
+    this.actionError.set(null);
+    this.setTablePosition(
+      change.table.id,
+      change.positionX,
+      change.positionY
+    );
+
+    this.tablesApi
+      .updatePosition(change.table.id, {
+        positionX: change.positionX,
+        positionY: change.positionY
+      })
+      .pipe(
+        finalize(() => this.positionSavingId.set(null)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        error: () => {
+          this.setTablePosition(
+            change.table.id,
+            previousX,
+            previousY
+          );
+          this.actionError.set(
+            `The position of table ${change.table.number} could not be saved.`
+          );
         }
       });
   }
@@ -249,5 +294,19 @@ export class TableList implements OnInit {
 
   clearActionError(): void {
     this.actionError.set(null);
+  }
+
+  private setTablePosition(
+    tableId: number,
+    positionX: number | null,
+    positionY: number | null
+  ): void {
+    this.tables.update(tables =>
+      tables.map(table =>
+        table.id === tableId
+          ? { ...table, positionX, positionY }
+          : table
+      )
+    );
   }
 }

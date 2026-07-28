@@ -26,7 +26,9 @@ public sealed class GetTablesQueryHandler
                 x.Number,
                 x.Capacity,
                 x.Status,
-                x.Orders.FirstOrDefault()?.Id))
+                x.Orders.FirstOrDefault()?.Id,
+                x.PositionX,
+                x.PositionY))
             .ToList();
 
         return items;

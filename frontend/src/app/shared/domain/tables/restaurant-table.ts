@@ -6,4 +6,6 @@ export interface RestaurantTable {
   capacity: number;
   status: TableStatus;
   activeOrderId: number | null;
+  positionX: number | null;
+  positionY: number | null;
 }

@@ -8,6 +8,7 @@ using Restaurant.Application.Tables.Commands.OccupyTable;
 using Restaurant.Application.Tables.Commands.ReleaseTable;
 using Restaurant.Application.Tables.Commands.ReserveTable;
 using Restaurant.Application.Tables.Commands.UpdateTable;
+using Restaurant.Application.Tables.Commands.UpdateTablePosition;
 using Restaurant.Application.Tables.Queries.GetTableById;
 using Restaurant.Application.Tables.Queries.GetTables;
 
@@ -121,6 +122,22 @@ public sealed class TablesController : ControllerBase
     public async Task<IActionResult> Disable(int id, CancellationToken cancellationToken)
     {
         await _sender.Send(new DisableTableCommand(id), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPatch("{id:int}/position")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdatePosition(
+        int id,
+        [FromBody] UpdateTablePositionCommand command,
+        CancellationToken cancellationToken)
+    {
+        command = command with { Id = id };
+
+        await _sender.Send(command, cancellationToken);
+
         return NoContent();
     }
 

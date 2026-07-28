@@ -6,6 +6,7 @@ import { environment } from '../../../../environments/environment';
 import { CreateTableRequest } from '../models/create-table-request';
 import { UpdateTableRequest } from '../models/update-table-request';
 import { RestaurantTable } from '../../../shared/domain/tables/restaurant-table';
+import { UpdateTablePositionRequest } from '../models/update-table-position-request';
 
 @Injectable({
   providedIn: 'root'
@@ -59,6 +60,16 @@ export class TablesApi {
     return this.http.patch<void>(
       `${this.baseUrl}/${id}/disable`,
       {}
+    );
+  }
+
+  updatePosition(
+    id: number,
+    request: UpdateTablePositionRequest
+  ): Observable<void> {
+    return this.http.patch<void>(
+      `${this.baseUrl}/${id}/position`,
+      request
     );
   }
 

@@ -8,6 +8,7 @@ using Restaurant.Application.Tables.Commands.OccupyTable;
 using Restaurant.Application.Tables.Commands.ReleaseTable;
 using Restaurant.Application.Tables.Commands.ReserveTable;
 using Restaurant.Application.Tables.Commands.UpdateTable;
+using Restaurant.Application.Tables.Commands.UpdateTablePosition;
 using Restaurant.Application.Tables.Queries.GetTableById;
 using Restaurant.Application.Tables.Queries.GetTables;
 using Restaurant.Domain.Entities;
@@ -62,6 +63,22 @@ public sealed class TableHandlerTests
 
         Assert.Equal(2, table.Number);
         Assert.Equal(6, table.Capacity);
+    }
+
+    [Fact]
+    public async Task UpdatePosition_changes_and_persists_position()
+    {
+        var table = new Table(1, 4);
+        _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
+
+        await new UpdateTablePositionCommandHandler(_tables).Handle(
+            new UpdateTablePositionCommand(1, 25, 75),
+            CancellationToken.None);
+
+        Assert.Equal(25, table.PositionX);
+        Assert.Equal(75, table.PositionY);
+        await _tables.Received(1).SaveChangesAsync(
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]

@@ -31,6 +31,8 @@ public sealed class GetTableByIdQueryHandler
             table.Number,
             table.Capacity,
             table.Status,
-            table.Orders.FirstOrDefault()?.Id);
+            table.Orders.FirstOrDefault()?.Id,
+            table.PositionX,
+            table.PositionY);
     }
 }
