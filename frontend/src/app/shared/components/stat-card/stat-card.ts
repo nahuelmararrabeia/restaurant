@@ -16,7 +16,7 @@ export class StatCard {
 
   readonly value = input.required<string | number>();
 
-  readonly icon = input.required<AppIcon>();
+  readonly icon = input<AppIcon>();
 
-  readonly color = input('blue');
+  readonly color = input<string | undefined>('blue');
 }

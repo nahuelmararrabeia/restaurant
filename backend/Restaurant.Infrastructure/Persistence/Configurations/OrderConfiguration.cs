@@ -12,6 +12,9 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.Version)
+            .IsConcurrencyToken();
+
         builder.HasIndex(x => x.TableId)
             .IsUnique()
             .HasFilter("\"Status\" NOT IN (4, 5)");

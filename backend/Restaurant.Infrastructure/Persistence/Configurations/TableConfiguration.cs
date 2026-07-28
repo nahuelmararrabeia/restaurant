@@ -12,6 +12,9 @@ public class TableConfiguration : IEntityTypeConfiguration<Table>
 
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.Version)
+            .IsConcurrencyToken();
+
         builder.Property(x => x.Number)
             .IsRequired();
 

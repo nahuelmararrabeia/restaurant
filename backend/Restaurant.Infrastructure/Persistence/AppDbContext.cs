@@ -35,6 +35,11 @@ public class AppDbContext : DbContext
         {
             return await base.SaveChangesAsync(cancellationToken);
         }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException(
+                "The resource was modified by another operation. Reload it and try again.");
+        }
         catch (DbUpdateException exception)
             when (IsConstraintViolation(exception))
         {
@@ -50,6 +55,11 @@ public class AppDbContext : DbContext
         try
         {
             return base.SaveChanges();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException(
+                "The resource was modified by another operation. Reload it and try again.");
         }
         catch (DbUpdateException exception)
             when (IsConstraintViolation(exception))
@@ -78,12 +88,14 @@ public class AppDbContext : DbContext
         {
             if (entry.State == EntityState.Added)
             {
+                entry.Entity.Version = 1;
                 entry.Entity.CreatedAt = DateTime.UtcNow;
                 entry.Entity.CreatedBy ??= "system";
             }
 
             if (entry.State == EntityState.Modified)
             {
+                entry.Entity.Version++;
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
                 entry.Entity.UpdatedBy ??= "system";
             }

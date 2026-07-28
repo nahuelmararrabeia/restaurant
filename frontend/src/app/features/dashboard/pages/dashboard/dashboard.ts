@@ -90,8 +90,8 @@ export class Dashboard implements OnInit {
             '1.2-2',
             'es-AR'
         ) ?? '$0.00',
-        icon: APP_ICONS.revenue,
-        color: 'purple' as const
+        // icon: APP_ICONS.revenue,
+        // color: 'purple' as const
       }
     ];
   });
