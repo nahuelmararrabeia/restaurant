@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Restaurant.Application.Common.Exceptions;
 using Restaurant.Domain.Entities;
 using Restaurant.Domain.Entities.Common;
-using System.Reflection.Emit;
 
 namespace Restaurant.Infrastructure.Persistence;
 
@@ -21,19 +22,50 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(AppDbContext).Assembly);
     }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public override async Task<int> SaveChangesAsync(
+        CancellationToken cancellationToken = default)
     {
         ApplyAuditInfo();
-        return base.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception)
+            when (IsConstraintViolation(exception))
+        {
+            throw new ConflictException(
+                "The operation conflicts with existing data.");
+        }
     }
 
     public override int SaveChanges()
     {
         ApplyAuditInfo();
-        return base.SaveChanges();
+
+        try
+        {
+            return base.SaveChanges();
+        }
+        catch (DbUpdateException exception)
+            when (IsConstraintViolation(exception))
+        {
+            throw new ConflictException(
+                "The operation conflicts with existing data.");
+        }
+    }
+
+    private static bool IsConstraintViolation(
+        DbUpdateException exception)
+    {
+        return exception.InnerException is SqliteException
+        {
+            SqliteErrorCode: 19
+        };
     }
 
     private void ApplyAuditInfo()

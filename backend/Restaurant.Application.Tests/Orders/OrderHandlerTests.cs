@@ -58,6 +58,26 @@ public sealed class OrderHandlerTests
     }
 
     [Fact]
+    public async Task Create_maps_database_race_to_table_conflict()
+    {
+        _tables.GetByIdAsync(1, Arg.Any<CancellationToken>())
+            .Returns(new Table(1, 4));
+        _orders.GetOpenByTableIdAsync(1, Arg.Any<CancellationToken>())
+            .Returns((Order?)null);
+        _orders.SaveChangesAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<int>(
+                new ConflictException("Unique constraint.")));
+
+        var exception = await Assert.ThrowsAsync<ConflictException>(() =>
+            new CreateOrderCommandHandler(_orders, _tables).Handle(
+                new CreateOrderCommand(1), CancellationToken.None));
+
+        Assert.Equal(
+            "Table 1 already has an open order.",
+            exception.Message);
+    }
+
+    [Fact]
     public async Task AddItem_adds_available_product()
     {
         var order = PendingOrder();

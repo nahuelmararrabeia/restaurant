@@ -49,8 +49,15 @@ public sealed class CreateOrderCommandHandler
         table.Occupy();
 
         await _orderRepository.AddAsync(order, cancellationToken);
-        await _orderRepository.SaveChangesAsync(cancellationToken);
-        await _tableRepository.SaveChangesAsync();
+        try
+        {
+            await _orderRepository.SaveChangesAsync(cancellationToken);
+        }
+        catch (ConflictException)
+        {
+            throw new ConflictException(
+                $"Table {request.TableId} already has an open order.");
+        }
 
         return order.Id;
     }
