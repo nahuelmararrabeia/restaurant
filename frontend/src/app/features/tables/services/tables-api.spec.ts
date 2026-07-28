@@ -20,7 +20,8 @@ describe('TablesApi', () => {
     status: 'Available',
     activeOrderId: null,
     positionX: 20,
-    positionY: 30
+    positionY: 30,
+    version: 7
   };
 
   beforeEach(() => {
@@ -60,10 +61,14 @@ describe('TablesApi', () => {
     expect(create.request.body).toEqual({ number: 4, capacity: 6 });
     create.flush(table);
 
-    api.update(1, { number: 5, capacity: 8 }).subscribe();
+    api.update(1, { number: 5, capacity: 8, version: 7 }).subscribe();
     const update = http.expectOne(`${baseUrl}/1`);
     expect(update.request.method).toBe('PUT');
-    expect(update.request.body).toEqual({ number: 5, capacity: 8 });
+    expect(update.request.body).toEqual({
+      number: 5,
+      capacity: 8,
+      version: 7
+    });
     update.flush({ ...table, number: 5, capacity: 8 });
   });
 
@@ -71,24 +76,35 @@ describe('TablesApi', () => {
     ['enable', 'enable'],
     ['disable', 'disable']
   ] as const)('%s a table', (method, path) => {
-    api[method](1).subscribe();
+    api[method](1, 7).subscribe();
     const request = http.expectOne(`${baseUrl}/1/${path}`);
     expect(request.request.method).toBe('PATCH');
-    expect(request.request.body).toEqual({});
+    expect(request.request.body).toEqual({ version: 7 });
     request.flush(null);
   });
 
   it('updates a table position', () => {
-    api.updatePosition(1, { positionX: 42, positionY: 58 }).subscribe();
+    api.updatePosition(1, {
+      positionX: 42,
+      positionY: 58,
+      version: 7
+    }).subscribe();
     const request = http.expectOne(`${baseUrl}/1/position`);
     expect(request.request.method).toBe('PATCH');
-    expect(request.request.body).toEqual({ positionX: 42, positionY: 58 });
+    expect(request.request.body).toEqual({
+      positionX: 42,
+      positionY: 58,
+      version: 7
+    });
     request.flush(null);
   });
 
   it('deletes a table', () => {
-    api.delete(1).subscribe();
-    const request = http.expectOne(`${baseUrl}/1`);
+    api.delete(1, 7).subscribe();
+    const request = http.expectOne(candidate =>
+      candidate.url === `${baseUrl}/1`
+      && candidate.params.get('version') === '7'
+    );
     expect(request.request.method).toBe('DELETE');
     request.flush(null);
   });

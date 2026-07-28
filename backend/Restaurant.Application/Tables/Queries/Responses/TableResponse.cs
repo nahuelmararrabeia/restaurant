@@ -9,4 +9,5 @@ public sealed record TableResponse(
     TableStatus Status,
     int? ActiveOrderId,
     double? PositionX,
-    double? PositionY);
+    double? PositionY,
+    long Version);

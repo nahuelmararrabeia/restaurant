@@ -25,6 +25,10 @@ public sealed class UpdateTableCommandHandler
         if (table is null)
             throw new NotFoundException($"Table {request.Id} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            table,
+            request.Version);
+
         if (table.Number != request.Number)
         {
             var exists = await _tableRepository.ExistsByNumberAsync(

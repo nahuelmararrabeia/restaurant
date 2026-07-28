@@ -15,7 +15,8 @@ describe('OrdersService', () => {
     unitPrice: 12000,
     quantity: 2,
     notes: 'Well done',
-    subtotal: 24000
+    subtotal: 24000,
+    version: 4
   };
   const pending: Order = {
     id: 3,
@@ -26,7 +27,8 @@ describe('OrdersService', () => {
     total: 24000,
     orderedAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-01T00:00:00Z',
-    closedAt: ''
+    closedAt: '',
+    version: 7
   };
   const ordersApi = {
     getById: vi.fn(),
@@ -94,7 +96,8 @@ describe('OrdersService', () => {
     expect(ordersApi.addItem).toHaveBeenCalledWith(3, {
       productId: 2,
       quantity: 3,
-      notes: null
+      notes: null,
+      version: 7
     });
     expect(success).toHaveBeenCalledOnce();
     expect(state.totalUnits()).toBe(3);
@@ -126,7 +129,9 @@ describe('OrdersService', () => {
 
     expect(ordersApi.updateItem).toHaveBeenCalledWith(3, 10, {
       quantity: 3,
-      notes: 'Well done'
+      notes: 'Well done',
+      version: 7,
+      itemVersion: 4
     });
     expect(state.totalUnits()).toBe(3);
   });
@@ -150,7 +155,7 @@ describe('OrdersService', () => {
     const state = service();
     state.initialize(3);
     state.removeItem(10);
-    expect(ordersApi.removeItem).toHaveBeenCalledWith(3, 10);
+    expect(ordersApi.removeItem).toHaveBeenCalledWith(3, 10, 7, 4);
     expect(state.order()?.items).toEqual([]);
   });
 
@@ -164,7 +169,7 @@ describe('OrdersService', () => {
     const state = service();
     state.initialize(3);
     state.performOrderAction(action);
-    expect(ordersApi[method]).toHaveBeenCalledWith(3);
+    expect(ordersApi[method]).toHaveBeenCalledWith(3, 7);
     expect(state.order()?.status).toBe(status);
   });
 

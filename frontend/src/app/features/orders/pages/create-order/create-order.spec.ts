@@ -15,7 +15,8 @@ describe('CreateOrder', () => {
     status: 'Available' as const,
     activeOrderId: null,
     positionX: null,
-    positionY: null
+    positionY: null,
+    version: 7
   };
   const tablesApi = { getAvailable: vi.fn() };
   const ordersApi = { create: vi.fn() };
@@ -57,9 +58,13 @@ describe('CreateOrder', () => {
   it('creates the order and navigates to its detail', () => {
     ordersApi.create.mockReturnValue(of({ id: 8 }));
     const create = component();
+    create.tables.set([table]);
     create.selectedTableId.set(1);
     create.createOrder();
-    expect(ordersApi.create).toHaveBeenCalledWith({ tableId: 1 });
+    expect(ordersApi.create).toHaveBeenCalledWith({
+      tableId: 1,
+      tableVersion: 7
+    });
     expect(router.navigate).toHaveBeenCalledWith(['/orders', 8]);
   });
 

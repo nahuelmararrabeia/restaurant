@@ -37,21 +37,24 @@ export class ProductsApi {
     );
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
-  }
-
-  enable(id: number): Observable<void> {
-    return this.http.patch<void>(
-      `${this.baseUrl}/${id}/enable`,
-      {}
+  delete(id: number, version: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.baseUrl}/${id}`,
+      { params: { version } }
     );
   }
 
-  disable(id: number): Observable<void> {
+  enable(id: number, version: number): Observable<void> {
+    return this.http.patch<void>(
+      `${this.baseUrl}/${id}/enable`,
+      { version }
+    );
+  }
+
+  disable(id: number, version: number): Observable<void> {
     return this.http.patch<void>(
       `${this.baseUrl}/${id}/disable`,
-      {}
+      { version }
     );
   }
 }

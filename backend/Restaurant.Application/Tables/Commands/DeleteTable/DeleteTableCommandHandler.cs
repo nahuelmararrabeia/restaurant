@@ -26,6 +26,10 @@ public sealed class DeleteTableCommandHandler
         if (table is null)
             throw new NotFoundException($"Table {request.Id} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            table,
+            request.Version);
+
         if (table.Status is TableStatus.Occupied or TableStatus.Reserved)
             throw new BusinessException(
                 "You cannot delete an occupied or reserved table.");

@@ -29,6 +29,10 @@ public sealed class CreateOrderCommandHandler
         if (table is null)
             throw new NotFoundException($"Table {request.TableId} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            table,
+            request.TableVersion);
+
         if (table.Status is TableStatus.Disabled)
             throw new BusinessException("Cannot create an order for a disabled table.");
 

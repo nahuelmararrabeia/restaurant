@@ -27,6 +27,21 @@ public sealed class RemoveOrderItemCommandHandler
         if (order is null)
             throw new NotFoundException($"Order {request.OrderId} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            order,
+            request.Version);
+
+        var item = order.Items.FirstOrDefault(
+            item => item.Id == request.OrderItemId);
+
+        if (item is null)
+            throw new NotFoundException(
+                $"Order item {request.OrderItemId} was not found.");
+
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            item,
+            request.ItemVersion);
+
         order.RemoveItem(request.OrderItemId);
 
         await _orderRepository.SaveChangesAsync(cancellationToken);

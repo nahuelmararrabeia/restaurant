@@ -11,4 +11,5 @@ export interface Order {
   orderedAt: string;
   updatedAt: string;
   closedAt: string;
+  version: number;
 }

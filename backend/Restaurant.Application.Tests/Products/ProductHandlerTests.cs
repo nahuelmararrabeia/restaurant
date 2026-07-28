@@ -40,12 +40,12 @@ public sealed class ProductHandlerTests
     [Fact]
     public async Task Update_changes_and_persists_product()
     {
-        var product = new Product();
+        var product = new Product { Version = 1 };
         _products.GetByIdAsync(1, Arg.Any<CancellationToken>())
             .Returns(product);
 
         await new UpdateProductCommandHandler(_products).Handle(
-            new UpdateProductCommand(1, " Coffee ", " Hot ", 900),
+            new UpdateProductCommand(1, " Coffee ", " Hot ", 900, 1),
             TestContext.Current.CancellationToken);
 
         Assert.Equal("Coffee", product.Name);
@@ -55,14 +55,36 @@ public sealed class ProductHandlerTests
     }
 
     [Fact]
+    public async Task Update_rejects_a_stale_version()
+    {
+        var product = new Product { Version = 2 };
+        _products.GetByIdAsync(1, Arg.Any<CancellationToken>())
+            .Returns(product);
+
+        var exception = await Assert.ThrowsAsync<ConflictException>(() =>
+            new UpdateProductCommandHandler(_products).Handle(
+                new UpdateProductCommand(
+                    1,
+                    "Coffee",
+                    null,
+                    900,
+                    1),
+                TestContext.Current.CancellationToken));
+
+        Assert.Contains("modified by another operation", exception.Message);
+        await _products.DidNotReceive().SaveChangesAsync(
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Enable_enables_product()
     {
-        var product = new Product();
+        var product = new Product { Version = 1 };
         product.Disable();
         _products.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(product);
 
         await new EnableProductCommandHandler(_products).Handle(
-            new EnableProductCommand(1),
+            new EnableProductCommand(1, 1),
             TestContext.Current.CancellationToken);
 
         Assert.True(product.IsAvailable);
@@ -71,11 +93,11 @@ public sealed class ProductHandlerTests
     [Fact]
     public async Task Disable_disables_product()
     {
-        var product = new Product();
+        var product = new Product { Version = 1 };
         _products.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(product);
 
         await new DisableProductCommandHandler(_products).Handle(
-            new DisableProductCommand(1),
+            new DisableProductCommand(1, 1),
             TestContext.Current.CancellationToken);
 
         Assert.False(product.IsAvailable);
@@ -84,13 +106,13 @@ public sealed class ProductHandlerTests
     [Fact]
     public async Task Delete_removes_unused_product()
     {
-        var product = new Product { Id = 1 };
+        var product = new Product { Id = 1, Version = 1 };
         _products.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(product);
         _orderItems.ExistsByProductIdAsync(1, Arg.Any<CancellationToken>())
             .Returns(false);
 
         await new DeleteProductCommandHandler(_products, _orderItems).Handle(
-            new DeleteProductCommand(1),
+            new DeleteProductCommand(1, 1),
             TestContext.Current.CancellationToken);
 
         _products.Received(1).Delete(product);
@@ -101,13 +123,13 @@ public sealed class ProductHandlerTests
     public async Task Delete_rejects_product_used_in_orders()
     {
         _products.GetByIdAsync(1, Arg.Any<CancellationToken>())
-            .Returns(new Product { Id = 1 });
+            .Returns(new Product { Id = 1, Version = 1 });
         _orderItems.ExistsByProductIdAsync(1, Arg.Any<CancellationToken>())
             .Returns(true);
 
         await Assert.ThrowsAsync<ConflictException>(() =>
             new DeleteProductCommandHandler(_products, _orderItems).Handle(
-                new DeleteProductCommand(1),
+                new DeleteProductCommand(1, 1),
                 TestContext.Current.CancellationToken));
     }
 

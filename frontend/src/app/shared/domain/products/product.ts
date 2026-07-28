@@ -4,6 +4,7 @@ export interface Product {
   description: string | null;
   price: number;
   isAvailable: boolean;
+  version: number;
   createdAt: string;
   updatedAt: string | null;
 }

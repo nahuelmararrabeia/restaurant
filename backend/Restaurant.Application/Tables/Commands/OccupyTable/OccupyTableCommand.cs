@@ -3,6 +3,7 @@
 namespace Restaurant.Application.Tables.Commands.OccupyTable
 {
     public sealed record OccupyTableCommand(
-        int Id)
+        int Id,
+        long Version)
         : IRequest;
 }

@@ -47,13 +47,16 @@ export class EditTable implements OnInit {
   }
 
   updateTable(value: TableFormValue): void {
-    if (this.tableId === null || this.saving()) {
+    const table = this.table();
+
+    if (this.tableId === null || table === null || this.saving()) {
       return;
     }
 
     const request: UpdateTableRequest = {
       number: value.number,
-      capacity: value.capacity
+      capacity: value.capacity,
+      version: table.version
     };
 
     this.saving.set(true);

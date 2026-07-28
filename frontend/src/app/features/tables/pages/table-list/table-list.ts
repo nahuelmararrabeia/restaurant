@@ -92,7 +92,10 @@ export class TableList implements OnInit {
     this.actionError.set(null);
 
     this.ordersApi
-      .create({ tableId: table.id })
+      .create({
+        tableId: table.id,
+        tableVersion: table.version
+      })
       .pipe(
         finalize(() => this.actionInProgress.set(null)),
         takeUntilDestroyed(this.destroyRef)
@@ -134,13 +137,23 @@ export class TableList implements OnInit {
     this.tablesApi
       .updatePosition(change.table.id, {
         positionX: change.positionX,
-        positionY: change.positionY
+        positionY: change.positionY,
+        version: change.table.version
       })
       .pipe(
         finalize(() => this.positionSavingId.set(null)),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
+        next: () => {
+          this.tables.update(tables =>
+            tables.map(table =>
+              table.id === change.table.id
+                ? { ...table, version: table.version + 1 }
+                : table
+            )
+          );
+        },
         error: () => {
           this.setTablePosition(
             change.table.id,
@@ -163,7 +176,7 @@ export class TableList implements OnInit {
     this.actionError.set(null);
 
     this.tablesApi
-      .enable(table.id)
+      .enable(table.id, table.version)
       .pipe(
         finalize(() => this.actionInProgress.set(null)),
         takeUntilDestroyed(this.destroyRef)
@@ -175,7 +188,8 @@ export class TableList implements OnInit {
               currentTable.id === table.id
                 ? {
                     ...currentTable,
-                    status: 'Available'
+                    status: 'Available',
+                    version: currentTable.version + 1
                   }
                 : currentTable
             )
@@ -198,7 +212,7 @@ export class TableList implements OnInit {
     this.actionError.set(null);
 
     this.tablesApi
-      .disable(table.id)
+      .disable(table.id, table.version)
       .pipe(
         finalize(() => this.actionInProgress.set(null)),
         takeUntilDestroyed(this.destroyRef)
@@ -210,7 +224,8 @@ export class TableList implements OnInit {
               currentTable.id === table.id
                 ? {
                     ...currentTable,
-                    status: 'Disabled'
+                    status: 'Disabled',
+                    version: currentTable.version + 1
                   }
                 : currentTable
             )
@@ -248,7 +263,7 @@ export class TableList implements OnInit {
     this.actionError.set(null);
 
     this.tablesApi
-      .delete(table.id)
+      .delete(table.id, table.version)
       .pipe(
         finalize(() => this.actionInProgress.set(null)),
         takeUntilDestroyed(this.destroyRef)

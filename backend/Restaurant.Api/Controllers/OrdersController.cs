@@ -101,7 +101,9 @@ public sealed class OrdersController : ControllerBase
                 id,
                 orderItemId,
                 command.Quantity,
-                command.Notes),
+                command.Notes,
+                command.Version,
+                command.ItemVersion),
             cancellationToken);
 
         return Ok(response);
@@ -113,10 +115,16 @@ public sealed class OrdersController : ControllerBase
     public async Task<IActionResult> RemoveItem(
         int id,
         int orderItemId,
+        [FromQuery] long version,
+        [FromQuery] long itemVersion,
         CancellationToken cancellationToken)
     {
         var response = await _sender.Send(
-            new RemoveOrderItemCommand(id, orderItemId),
+            new RemoveOrderItemCommand(
+                id,
+                orderItemId,
+                version,
+                itemVersion),
             cancellationToken);
 
         return Ok(response);
@@ -126,10 +134,11 @@ public sealed class OrdersController : ControllerBase
     [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> StartPreparing(
         int id,
+        [FromBody] Restaurant.Api.Models.VersionRequest request,
         CancellationToken cancellationToken)
     {
         var response = await _sender.Send(
-            new StartPreparingOrderCommand(id),
+            new StartPreparingOrderCommand(id, request.Version),
             cancellationToken);
 
         return Ok(response);
@@ -139,10 +148,11 @@ public sealed class OrdersController : ControllerBase
     [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> MarkReady(
         int id,
+        [FromBody] Restaurant.Api.Models.VersionRequest request,
         CancellationToken cancellationToken)
     {
         var response = await _sender.Send(
-            new MarkOrderReadyCommand(id),
+            new MarkOrderReadyCommand(id, request.Version),
             cancellationToken);
 
         return Ok(response);
@@ -152,10 +162,11 @@ public sealed class OrdersController : ControllerBase
     [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Deliver(
         int id,
+        [FromBody] Restaurant.Api.Models.VersionRequest request,
         CancellationToken cancellationToken)
     {
         var response = await _sender.Send(
-            new DeliverOrderCommand(id),
+            new DeliverOrderCommand(id, request.Version),
             cancellationToken);
 
         return Ok(response);
@@ -165,10 +176,11 @@ public sealed class OrdersController : ControllerBase
     [ProducesResponseType(typeof(OrderDetailsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Cancel(
         int id,
+        [FromBody] Restaurant.Api.Models.VersionRequest request,
         CancellationToken cancellationToken)
     {
         var response = await _sender.Send(
-            new CancelOrderCommand(id),
+            new CancelOrderCommand(id, request.Version),
             cancellationToken);
 
         return Ok(response);

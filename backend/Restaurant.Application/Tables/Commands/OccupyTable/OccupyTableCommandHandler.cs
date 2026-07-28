@@ -25,6 +25,10 @@ public sealed class OccupyTableCommandHandler
         if (table is null)
             throw new NotFoundException($"Table {request.Id} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            table,
+            request.Version);
+
         table.Occupy();
 
         await _tableRepository.SaveChangesAsync(cancellationToken);

@@ -25,6 +25,10 @@ public sealed class ReserveTableCommandHandler
         if (table is null)
             throw new NotFoundException($"Table {request.Id} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            table,
+            request.Version);
+
         table.Reserve();
 
         await _tableRepository.SaveChangesAsync(cancellationToken);

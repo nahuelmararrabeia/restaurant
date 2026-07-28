@@ -30,6 +30,7 @@ public sealed class GetProductByIdQueryHandler
             product.Name,
             product.Description,
             product.Price,
-            product.IsAvailable);
+            product.IsAvailable,
+            product.Version);
     }
 }

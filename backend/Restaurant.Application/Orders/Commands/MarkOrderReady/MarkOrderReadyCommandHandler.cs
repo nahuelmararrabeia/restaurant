@@ -28,6 +28,10 @@ public sealed class MarkOrderReadyCommandHandler
         if (order is null)
             throw new NotFoundException($"Order {request.Id} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            order,
+            request.Version);
+
         order.MarkReady();
 
         await _orderRepository.SaveChangesAsync(cancellationToken);

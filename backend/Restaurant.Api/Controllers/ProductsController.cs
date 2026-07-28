@@ -84,10 +84,11 @@ public sealed class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Enable(
         int id,
+        [FromBody] Restaurant.Api.Models.VersionRequest request,
         CancellationToken cancellationToken)
     {
         await _mediator.Send(
-            new EnableProductCommand(id),
+            new EnableProductCommand(id, request.Version),
             cancellationToken);
 
         return NoContent();
@@ -98,10 +99,11 @@ public sealed class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Disable(
         int id,
+        [FromBody] Restaurant.Api.Models.VersionRequest request,
         CancellationToken cancellationToken)
     {
         await _mediator.Send(
-            new DisableProductCommand(id),
+            new DisableProductCommand(id, request.Version),
             cancellationToken);
 
         return NoContent();
@@ -113,10 +115,11 @@ public sealed class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Delete(
         int id,
+        [FromQuery] long version,
         CancellationToken cancellationToken)
     {
         await _mediator.Send(
-            new DeleteProductCommand(id),
+            new DeleteProductCommand(id, version),
             cancellationToken);
 
         return NoContent();

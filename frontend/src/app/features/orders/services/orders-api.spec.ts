@@ -40,27 +40,46 @@ describe('OrdersApi', () => {
     expect(get.request.method).toBe('GET');
     get.flush({});
 
-    api.create({ tableId: 4 }).subscribe();
+    api.create({ tableId: 4, tableVersion: 7 }).subscribe();
     const create = http.expectOne(baseUrl);
     expect(create.request.method).toBe('POST');
-    expect(create.request.body).toEqual({ tableId: 4 });
+    expect(create.request.body).toEqual({ tableId: 4, tableVersion: 7 });
     create.flush({});
   });
 
   it('adds, updates and removes items', () => {
-    api.addItem(3, { productId: 2, quantity: 1, notes: null }).subscribe();
+    api.addItem(3, {
+      productId: 2,
+      quantity: 1,
+      notes: null,
+      version: 7
+    }).subscribe();
     const add = http.expectOne(`${baseUrl}/3/items`);
     expect(add.request.method).toBe('POST');
     add.flush({});
 
-    api.updateItem(3, 8, { quantity: 2, notes: 'No salt' }).subscribe();
+    api.updateItem(3, 8, {
+      quantity: 2,
+      notes: 'No salt',
+      version: 7,
+      itemVersion: 4
+    }).subscribe();
     const update = http.expectOne(`${baseUrl}/3/items/8`);
     expect(update.request.method).toBe('PUT');
-    expect(update.request.body).toEqual({ quantity: 2, notes: 'No salt' });
+    expect(update.request.body).toEqual({
+      quantity: 2,
+      notes: 'No salt',
+      version: 7,
+      itemVersion: 4
+    });
     update.flush({});
 
-    api.removeItem(3, 8).subscribe();
-    const remove = http.expectOne(`${baseUrl}/3/items/8`);
+    api.removeItem(3, 8, 7, 4).subscribe();
+    const remove = http.expectOne(request =>
+      request.url === `${baseUrl}/3/items/8`
+      && request.params.get('version') === '7'
+      && request.params.get('itemVersion') === '4'
+    );
     expect(remove.request.method).toBe('DELETE');
     remove.flush({});
   });
@@ -71,10 +90,10 @@ describe('OrdersApi', () => {
     ['deliver', 'deliver'],
     ['cancel', 'cancel']
   ] as const)('%s patches the order status', (method, path) => {
-    api[method](3).subscribe();
+    api[method](3, 7).subscribe();
     const request = http.expectOne(`${baseUrl}/3/${path}`);
     expect(request.request.method).toBe('PATCH');
-    expect(request.request.body).toEqual({});
+    expect(request.request.body).toEqual({ version: 7 });
     request.flush({});
   });
 });

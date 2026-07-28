@@ -15,7 +15,8 @@ describe('TableList', () => {
     status: 'Available',
     activeOrderId: null,
     positionX: 10,
-    positionY: 20
+    positionY: 20,
+    version: 7
   };
   const tablesApi = {
     getAll: vi.fn(),
@@ -57,7 +58,10 @@ describe('TableList', () => {
     const list = component();
     list.createOrder(table);
 
-    expect(ordersApi.create).toHaveBeenCalledWith({ tableId: 1 });
+    expect(ordersApi.create).toHaveBeenCalledWith({
+      tableId: 1,
+      tableVersion: 7
+    });
     expect(router.navigate).toHaveBeenCalledWith(['/orders', 9]);
   });
 
@@ -80,7 +84,8 @@ describe('TableList', () => {
 
     expect(tablesApi.updatePosition).toHaveBeenCalledWith(1, {
       positionX: 40,
-      positionY: 60
+      positionY: 60,
+      version: 7
     });
     expect(list.tables()[0].positionX).toBe(40);
     expect(list.tables()[0].positionY).toBe(60);

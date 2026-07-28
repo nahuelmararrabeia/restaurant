@@ -28,6 +28,21 @@ public sealed class UpdateOrderItemCommandHandler
         if (order is null)
             throw new NotFoundException($"Order {request.OrderId} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            order,
+            request.Version);
+
+        var item = order.Items.FirstOrDefault(
+            item => item.Id == request.ItemId);
+
+        if (item is null)
+            throw new NotFoundException(
+                $"Order item {request.ItemId} was not found.");
+
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            item,
+            request.ItemVersion);
+
         order.UpdateItem(
             request.ItemId,
             request.Quantity,

@@ -81,7 +81,7 @@ export class ProductList implements OnInit {
     this.actionError.set(null);
 
     this.productsApi
-      .delete(product.id)
+      .delete(product.id, product.version)
       .pipe(
         finalize(() => this.deletingProductId.set(null)),
         takeUntilDestroyed(this.destroyRef)

@@ -79,9 +79,14 @@ public sealed class TablesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Reserve(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Reserve(
+        int id,
+        [FromBody] Restaurant.Api.Models.VersionRequest request,
+        CancellationToken cancellationToken)
     {
-        await _sender.Send(new ReserveTableCommand(id), cancellationToken);
+        await _sender.Send(
+            new ReserveTableCommand(id, request.Version),
+            cancellationToken);
         return NoContent();
     }
 
@@ -89,9 +94,14 @@ public sealed class TablesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Occupy(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Occupy(
+        int id,
+        [FromBody] Restaurant.Api.Models.VersionRequest request,
+        CancellationToken cancellationToken)
     {
-        await _sender.Send(new OccupyTableCommand(id), cancellationToken);
+        await _sender.Send(
+            new OccupyTableCommand(id, request.Version),
+            cancellationToken);
         return NoContent();
     }
 
@@ -99,9 +109,14 @@ public sealed class TablesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Release(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Release(
+        int id,
+        [FromBody] Restaurant.Api.Models.VersionRequest request,
+        CancellationToken cancellationToken)
     {
-        await _sender.Send(new ReleaseTableCommand(id), cancellationToken);
+        await _sender.Send(
+            new ReleaseTableCommand(id, request.Version),
+            cancellationToken);
         return NoContent();
     }
 
@@ -109,9 +124,14 @@ public sealed class TablesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Enable(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Enable(
+        int id,
+        [FromBody] Restaurant.Api.Models.VersionRequest request,
+        CancellationToken cancellationToken)
     {
-        await _sender.Send(new EnableTableCommand(id), cancellationToken);
+        await _sender.Send(
+            new EnableTableCommand(id, request.Version),
+            cancellationToken);
         return NoContent();
     }
 
@@ -119,9 +139,14 @@ public sealed class TablesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Disable(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Disable(
+        int id,
+        [FromBody] Restaurant.Api.Models.VersionRequest request,
+        CancellationToken cancellationToken)
     {
-        await _sender.Send(new DisableTableCommand(id), cancellationToken);
+        await _sender.Send(
+            new DisableTableCommand(id, request.Version),
+            cancellationToken);
         return NoContent();
     }
 
@@ -145,9 +170,14 @@ public sealed class TablesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(
+        int id,
+        [FromQuery] long version,
+        CancellationToken cancellationToken)
     {
-        await _sender.Send(new DeleteTableCommand(id), cancellationToken);
+        await _sender.Send(
+            new DeleteTableCommand(id, version),
+            cancellationToken);
         return NoContent();
     }
 }

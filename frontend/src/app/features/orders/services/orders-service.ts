@@ -122,6 +122,7 @@ export class OrdersService {
   ): void {
     if (
       this.orderId === null ||
+      this.order() === null ||
       this.addingItem() ||
       !this.canEdit()
     ) {
@@ -132,7 +133,10 @@ export class OrdersService {
     this.actionError.set(null);
 
     this.ordersApi
-      .addItem(this.orderId, value)
+      .addItem(this.orderId, {
+        ...value,
+        version: this.order()!.version
+      })
       .pipe(
         finalize(() => this.addingItem.set(false)),
         takeUntilDestroyed(this.destroyRef)
@@ -190,8 +194,21 @@ export class OrdersService {
     this.itemAction.set({ itemId, action: 'remove' });
     this.actionError.set(null);
 
+    const order = this.order();
+    const item = order?.items.find(item => item.id === itemId);
+
+    if (!order || !item) {
+      this.itemAction.set(null);
+      return;
+    }
+
     this.ordersApi
-      .removeItem(this.orderId, itemId)
+      .removeItem(
+        this.orderId,
+        itemId,
+        order.version,
+        item.version
+      )
       .pipe(
         finalize(() => this.itemAction.set(null)),
         takeUntilDestroyed(this.destroyRef)
@@ -276,7 +293,9 @@ export class OrdersService {
     this.ordersApi
       .updateItem(this.orderId, itemId, {
         quantity,
-        notes: currentItem.notes
+        notes: currentItem.notes,
+        version: this.order()!.version,
+        itemVersion: currentItem.version
       })
       .pipe(
         finalize(() => this.itemAction.set(null)),
@@ -309,19 +328,24 @@ export class OrdersService {
   }
 
   private getOrderActionRequest(action: OrderAction): Observable<Order> {
-    if (this.orderId === null) {
+    const order = this.order();
+
+    if (this.orderId === null || order === null) {
       throw new Error('Order ID is required.');
     }
 
     switch (action) {
       case 'start-preparing':
-        return this.ordersApi.startPreparing(this.orderId);
+        return this.ordersApi.startPreparing(
+          this.orderId,
+          order.version
+        );
       case 'mark-ready':
-        return this.ordersApi.markReady(this.orderId);
+        return this.ordersApi.markReady(this.orderId, order.version);
       case 'deliver':
-        return this.ordersApi.deliver(this.orderId);
+        return this.ordersApi.deliver(this.orderId, order.version);
       case 'cancel':
-        return this.ordersApi.cancel(this.orderId);
+        return this.ordersApi.cancel(this.orderId, order.version);
     }
   }
 

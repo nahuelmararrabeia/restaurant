@@ -24,7 +24,8 @@ public sealed class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, 
                 x.Name,
                 x.Description,
                 x.Price,
-                x.IsAvailable
+                x.IsAvailable,
+                x.Version
             ))
             .ToList();
     }

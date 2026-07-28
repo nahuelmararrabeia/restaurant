@@ -3,6 +3,7 @@
 namespace Restaurant.Application.Tables.Commands.DeleteTable
 {
     public sealed record DeleteTableCommand(
-        int Id)
+        int Id,
+        long Version)
         : IRequest;
 }

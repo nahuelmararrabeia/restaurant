@@ -28,13 +28,13 @@ public sealed class OrderHandlerTests
     [Fact]
     public async Task Create_persists_order_and_occupies_table()
     {
-        var table = new Table(1, 4) { Id = 1 };
+        var table = new Table(1, 4) { Id = 1, Version = 1 };
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
         _orders.GetOpenByTableIdAsync(1, Arg.Any<CancellationToken>())
             .Returns((Order?)null);
 
         await new CreateOrderCommandHandler(_orders, _tables).Handle(
-            new CreateOrderCommand(1), CancellationToken.None);
+            new CreateOrderCommand(1, 1), CancellationToken.None);
 
         Assert.Equal(TableStatus.Occupied, table.Status);
         await _orders.Received(1).AddAsync(
@@ -48,20 +48,20 @@ public sealed class OrderHandlerTests
     public async Task Create_rejects_existing_open_order()
     {
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>())
-            .Returns(new Table(1, 4));
+            .Returns(new Table(1, 4) { Version = 1 });
         _orders.GetOpenByTableIdAsync(1, Arg.Any<CancellationToken>())
             .Returns(new Order());
 
         await Assert.ThrowsAsync<ConflictException>(() =>
             new CreateOrderCommandHandler(_orders, _tables).Handle(
-                new CreateOrderCommand(1), CancellationToken.None));
+                new CreateOrderCommand(1, 1), CancellationToken.None));
     }
 
     [Fact]
     public async Task Create_maps_database_race_to_table_conflict()
     {
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>())
-            .Returns(new Table(1, 4));
+            .Returns(new Table(1, 4) { Version = 1 });
         _orders.GetOpenByTableIdAsync(1, Arg.Any<CancellationToken>())
             .Returns((Order?)null);
         _orders.SaveChangesAsync(Arg.Any<CancellationToken>())
@@ -70,7 +70,7 @@ public sealed class OrderHandlerTests
 
         var exception = await Assert.ThrowsAsync<ConflictException>(() =>
             new CreateOrderCommandHandler(_orders, _tables).Handle(
-                new CreateOrderCommand(1), CancellationToken.None));
+                new CreateOrderCommand(1, 1), CancellationToken.None));
 
         Assert.Equal(
             "Table 1 already has an open order.",
@@ -88,7 +88,7 @@ public sealed class OrderHandlerTests
 
         var result = await new AddOrderItemCommandHandler(_orders, _products)
             .Handle(
-                new AddOrderItemCommand(1, 2, 3, "No sugar"),
+                new AddOrderItemCommand(1, 2, 3, "No sugar", 1),
                 CancellationToken.None);
 
         var item = Assert.Single(result.Items);
@@ -102,11 +102,12 @@ public sealed class OrderHandlerTests
     {
         var order = PendingOrder();
         order.AddItem(2, 1, 900);
+        order.Items.Single().Version = 1;
         _orders.GetByIdWithDetailsAsync(1, Arg.Any<CancellationToken>())
             .Returns(order);
 
         var result = await new UpdateOrderItemCommandHandler(_orders).Handle(
-            new UpdateOrderItemCommand(1, 0, 4, "Extra hot"),
+            new UpdateOrderItemCommand(1, 0, 4, "Extra hot", 1, 1),
             CancellationToken.None);
 
         Assert.Equal(4, Assert.Single(result.Items).Quantity);
@@ -119,11 +120,13 @@ public sealed class OrderHandlerTests
     {
         var order = PendingOrder();
         order.AddItem(2, 1, 900);
+        order.Items.Single().Version = 1;
         _orders.GetByIdWithDetailsAsync(1, Arg.Any<CancellationToken>())
             .Returns(order);
 
         var result = await new RemoveOrderItemCommandHandler(_orders).Handle(
-            new RemoveOrderItemCommand(1, 0), CancellationToken.None);
+            new RemoveOrderItemCommand(1, 0, 1, 1),
+            CancellationToken.None);
 
         Assert.Empty(result.Items);
         Assert.Equal(0, result.Total);
@@ -137,7 +140,9 @@ public sealed class OrderHandlerTests
             .Returns(order);
 
         var result = await new StartPreparingOrderCommandHandler(_orders)
-            .Handle(new StartPreparingOrderCommand(1), CancellationToken.None);
+            .Handle(
+                new StartPreparingOrderCommand(1, 1),
+                CancellationToken.None);
 
         Assert.Equal(OrderStatus.Preparing, result.Status);
     }
@@ -151,7 +156,9 @@ public sealed class OrderHandlerTests
             .Returns(order);
 
         var result = await new MarkOrderReadyCommandHandler(_orders)
-            .Handle(new MarkOrderReadyCommand(1), CancellationToken.None);
+            .Handle(
+                new MarkOrderReadyCommand(1, 1),
+                CancellationToken.None);
 
         Assert.Equal(OrderStatus.Ready, result.Status);
     }
@@ -159,7 +166,7 @@ public sealed class OrderHandlerTests
     [Fact]
     public async Task Deliver_closes_order_and_releases_table()
     {
-        var table = new Table(1, 4) { Id = 1 };
+        var table = new Table(1, 4) { Id = 1, Version = 1 };
         table.Occupy();
         var order = PendingOrder(table);
         order.StartPreparing();
@@ -169,7 +176,9 @@ public sealed class OrderHandlerTests
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
 
         var result = await new DeliverOrderCommandHandler(_orders, _tables)
-            .Handle(new DeliverOrderCommand(1), CancellationToken.None);
+            .Handle(
+                new DeliverOrderCommand(1, 1),
+                CancellationToken.None);
 
         Assert.Equal(OrderStatus.Delivered, result.Status);
         Assert.Equal(TableStatus.Available, table.Status);
@@ -178,7 +187,7 @@ public sealed class OrderHandlerTests
     [Fact]
     public async Task Cancel_closes_order_and_releases_table()
     {
-        var table = new Table(1, 4) { Id = 1 };
+        var table = new Table(1, 4) { Id = 1, Version = 1 };
         table.Occupy();
         var order = PendingOrder(table);
         _orders.GetByIdWithDetailsAsync(1, Arg.Any<CancellationToken>())
@@ -186,7 +195,9 @@ public sealed class OrderHandlerTests
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
 
         var result = await new CancelOrderCommandHandler(_orders, _tables)
-            .Handle(new CancelOrderCommand(1), CancellationToken.None);
+            .Handle(
+                new CancelOrderCommand(1, 1),
+                CancellationToken.None);
 
         Assert.Equal(OrderStatus.Cancelled, result.Status);
         Assert.Equal(TableStatus.Available, table.Status);
@@ -230,19 +241,21 @@ public sealed class OrderHandlerTests
 
         await Assert.ThrowsAsync<NotFoundException>(() =>
             new StartPreparingOrderCommandHandler(_orders).Handle(
-                new StartPreparingOrderCommand(99), CancellationToken.None));
+                new StartPreparingOrderCommand(99, 1),
+                CancellationToken.None));
     }
 
     private static Order PendingOrder(Table? table = null)
     {
-        table ??= new Table(1, 4) { Id = 1 };
+        table ??= new Table(1, 4) { Id = 1, Version = 1 };
 
         return new Order
         {
             Id = 1,
             TableId = table.Id,
             Table = table,
-            Status = OrderStatus.Pending
+            Status = OrderStatus.Pending,
+            Version = 1
         };
     }
 }

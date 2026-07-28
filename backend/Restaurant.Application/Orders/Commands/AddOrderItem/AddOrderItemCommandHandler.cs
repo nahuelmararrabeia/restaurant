@@ -31,6 +31,10 @@ public sealed class AddOrderItemCommandHandler
         if (order is null)
             throw new NotFoundException($"Order {request.OrderId} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            order,
+            request.Version);
+
         var product = await _productRepository.GetByIdAsync(
             request.ProductId,
             cancellationToken);

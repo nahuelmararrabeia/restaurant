@@ -28,7 +28,8 @@ public sealed class GetTablesQueryHandler
                 x.Status,
                 x.Orders.FirstOrDefault()?.Id,
                 x.PositionX,
-                x.PositionY))
+                x.PositionY,
+                x.Version))
             .ToList();
 
         return items;

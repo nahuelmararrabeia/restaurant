@@ -7,4 +7,5 @@ public sealed record AddOrderItemCommand(
     int OrderId,
     int ProductId,
     int Quantity,
-    string? Notes = null) : IRequest<OrderDetailsResponse>;
+    string? Notes,
+    long Version) : IRequest<OrderDetailsResponse>;

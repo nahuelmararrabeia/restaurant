@@ -13,6 +13,7 @@ describe('ProductList', () => {
     description: null,
     price: 12000,
     isAvailable: true,
+    version: 7,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: null
   };
@@ -58,7 +59,7 @@ describe('ProductList', () => {
     const list = component();
     list.products.set([product]);
     list.deleteProduct(product);
-    expect(api.delete).toHaveBeenCalledWith(1);
+    expect(api.delete).toHaveBeenCalledWith(1, 7);
     expect(list.products()).toEqual([]);
   });
 

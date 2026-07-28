@@ -109,13 +109,15 @@ export class CreateOrder implements OnInit {
 
   createOrder(): void {
     const tableId = this.selectedTableId();
+    const table = this.selectedTable();
 
-    if (tableId === null || this.creating()) {
+    if (tableId === null || table === null || this.creating()) {
       return;
     }
 
     const request: CreateOrderRequest = {
-      tableId
+      tableId,
+      tableVersion: table.version
     };
 
     this.creating.set(true);

@@ -3,6 +3,7 @@
 namespace Restaurant.Application.Tables.Commands.ReserveTable
 {
     public sealed record ReserveTableCommand(
-        int Id)
+        int Id,
+        long Version)
         : IRequest;
 }

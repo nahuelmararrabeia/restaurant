@@ -24,6 +24,10 @@ public sealed class DisableProductCommandHandler
         if (product is null)
             throw new KeyNotFoundException("Product not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            product,
+            request.Version);
+
         product.Disable();
 
         await _repository.SaveChangesAsync(cancellationToken);

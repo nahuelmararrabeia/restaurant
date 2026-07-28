@@ -18,7 +18,8 @@ public static class OrderDetailsMappings
             order.Total,
             order.Items
                 .Select(item => item.ToResponse())
-                .ToList()
+                .ToList(),
+            order.Version
         );
     }
 }

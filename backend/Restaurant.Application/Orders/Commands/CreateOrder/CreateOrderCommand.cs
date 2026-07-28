@@ -2,4 +2,6 @@
 
 namespace Restaurant.Application.Orders.Commands.CreateOrder;
 
-public sealed record CreateOrderCommand(int TableId) : IRequest<int>;
+public sealed record CreateOrderCommand(
+    int TableId,
+    long TableVersion) : IRequest<int>;

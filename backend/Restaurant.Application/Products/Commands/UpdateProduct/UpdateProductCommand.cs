@@ -6,5 +6,6 @@ public sealed record UpdateProductCommand(
     int Id,
     string Name,
     string? Description,
-    decimal Price
+    decimal Price,
+    long Version
 ) : IRequest;

@@ -33,6 +33,7 @@ public sealed class GetTableByIdQueryHandler
             table.Status,
             table.Orders.FirstOrDefault()?.Id,
             table.PositionX,
-            table.PositionY);
+            table.PositionY,
+            table.Version);
     }
 }

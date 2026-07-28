@@ -29,6 +29,10 @@ public sealed class DeleteProductCommandHandler
         if (product is null)
             throw new KeyNotFoundException("Product not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            product,
+            request.Version);
+
         var isUsedInOrders = await _orderItemRepository
             .ExistsByProductIdAsync(request.Id, cancellationToken);
 

@@ -19,6 +19,7 @@ describe('ProductsApi', () => {
     description: 'Stone baked',
     price: 12000,
     isAvailable: true,
+    version: 7,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: null
   };
@@ -57,7 +58,12 @@ describe('ProductsApi', () => {
   });
 
   it('updates a product', () => {
-    const body = { name: 'Pasta', description: 'Fresh', price: 9000 };
+    const body = {
+      name: 'Pasta',
+      description: 'Fresh',
+      price: 9000,
+      version: 7
+    };
     api.update(1, body).subscribe();
     const request = http.expectOne(`${baseUrl}/1`);
     expect(request.request.method).toBe('PUT');
@@ -66,8 +72,11 @@ describe('ProductsApi', () => {
   });
 
   it('deletes a product', () => {
-    api.delete(1).subscribe();
-    const request = http.expectOne(`${baseUrl}/1`);
+    api.delete(1, 7).subscribe();
+    const request = http.expectOne(candidate =>
+      candidate.url === `${baseUrl}/1`
+      && candidate.params.get('version') === '7'
+    );
     expect(request.request.method).toBe('DELETE');
     request.flush(null);
   });
@@ -76,10 +85,10 @@ describe('ProductsApi', () => {
     ['enable', 'enable'],
     ['disable', 'disable']
   ] as const)('%s a product', (method, path) => {
-    api[method](1).subscribe();
+    api[method](1, 7).subscribe();
     const request = http.expectOne(`${baseUrl}/1/${path}`);
     expect(request.request.method).toBe('PATCH');
-    expect(request.request.body).toEqual({});
+    expect(request.request.body).toEqual({ version: 7 });
     request.flush(null);
   });
 });

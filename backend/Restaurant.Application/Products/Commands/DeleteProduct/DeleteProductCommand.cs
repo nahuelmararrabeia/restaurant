@@ -3,5 +3,6 @@
 namespace Restaurant.Application.Products.Commands.DeleteProduct;
 
 public sealed record DeleteProductCommand(
-    int Id
+    int Id,
+    long Version
 ) : IRequest;

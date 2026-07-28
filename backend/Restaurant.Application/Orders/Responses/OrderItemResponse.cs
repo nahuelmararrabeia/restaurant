@@ -9,4 +9,5 @@ public sealed record OrderItemResponse(
     int Quantity,
     decimal UnitPrice,
     decimal SubTotal,
-    string? Notes);
+    string? Notes,
+    long Version);

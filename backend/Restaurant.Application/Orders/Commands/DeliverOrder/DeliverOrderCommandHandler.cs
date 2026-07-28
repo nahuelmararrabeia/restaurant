@@ -31,6 +31,10 @@ public sealed class DeliverOrderCommandHandler
         if (order is null)
             throw new NotFoundException($"Order {request.Id} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            order,
+            request.Version);
+
         var table = await _tableRepository.GetByIdAsync(
             order.TableId,
             cancellationToken);

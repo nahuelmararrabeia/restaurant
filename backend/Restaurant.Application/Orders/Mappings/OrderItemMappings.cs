@@ -14,7 +14,8 @@ public static class OrderItemMappings
             item.Quantity,
             item.UnitPrice,
             item.Quantity * item.UnitPrice,
-            item.Notes
+            item.Notes,
+            item.Version
         );
     }
 }

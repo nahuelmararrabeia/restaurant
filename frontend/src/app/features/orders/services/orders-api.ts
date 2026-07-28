@@ -67,38 +67,44 @@ export class OrdersApi {
 
   removeItem(
     orderId: number,
-    itemId: number
+    itemId: number,
+    version: number,
+    itemVersion: number
   ): Observable<Order> {
     return this.http.delete<Order>(
-      `${this.baseUrl}/${orderId}/items/${itemId}`
+      `${this.baseUrl}/${orderId}/items/${itemId}`,
+      { params: { version, itemVersion } }
     );
   }
 
-  startPreparing(orderId: number): Observable<Order> {
+  startPreparing(
+    orderId: number,
+    version: number
+  ): Observable<Order> {
     return this.http.patch<Order>(
       `${this.baseUrl}/${orderId}/preparing`,
-      {}
+      { version }
     );
   }
 
-  markReady(orderId: number): Observable<Order> {
+  markReady(orderId: number, version: number): Observable<Order> {
     return this.http.patch<Order>(
       `${this.baseUrl}/${orderId}/ready`,
-      {}
+      { version }
     );
   }
 
-  deliver(orderId: number): Observable<Order> {
+  deliver(orderId: number, version: number): Observable<Order> {
     return this.http.patch<Order>(
       `${this.baseUrl}/${orderId}/deliver`,
-      {}
+      { version }
     );
   }
 
-  cancel(orderId: number): Observable<Order> {
+  cancel(orderId: number, version: number): Observable<Order> {
     return this.http.patch<Order>(
       `${this.baseUrl}/${orderId}/cancel`,
-      {}
+      { version }
     );
   }
 }

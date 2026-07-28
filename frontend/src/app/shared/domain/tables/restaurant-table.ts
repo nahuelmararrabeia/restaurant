@@ -8,4 +8,5 @@ export interface RestaurantTable {
   activeOrderId: number | null;
   positionX: number | null;
   positionY: number | null;
+  version: number;
 }

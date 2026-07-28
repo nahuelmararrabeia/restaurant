@@ -49,17 +49,17 @@ export class TablesApi {
     );
   }
 
-  enable(id: number): Observable<void> {
+  enable(id: number, version: number): Observable<void> {
     return this.http.patch<void>(
       `${this.baseUrl}/${id}/enable`,
-      {}
+      { version }
     );
   }
 
-  disable(id: number): Observable<void> {
+  disable(id: number, version: number): Observable<void> {
     return this.http.patch<void>(
       `${this.baseUrl}/${id}/disable`,
-      {}
+      { version }
     );
   }
 
@@ -73,9 +73,10 @@ export class TablesApi {
     );
   }
 
-  delete(id: number): Observable<void> {
+  delete(id: number, version: number): Observable<void> {
     return this.http.delete<void>(
-      `${this.baseUrl}/${id}`
+      `${this.baseUrl}/${id}`,
+      { params: { version } }
     );
   }
 }

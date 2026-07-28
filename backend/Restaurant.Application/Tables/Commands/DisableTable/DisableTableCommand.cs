@@ -3,6 +3,7 @@
 namespace Restaurant.Application.Tables.Commands.DisableTable
 {
     public sealed record DisableTableCommand(
-        int Id)
+        int Id,
+        long Version)
         : IRequest;
 }

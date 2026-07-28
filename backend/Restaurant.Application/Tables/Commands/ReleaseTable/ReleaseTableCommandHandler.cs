@@ -25,6 +25,10 @@ public sealed class ReleaseTableCommandHandler
         if (table is null)
             throw new NotFoundException($"Table {request.Id} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            table,
+            request.Version);
+
         table.Release();
 
         await _tableRepository.SaveChangesAsync(cancellationToken);

@@ -47,14 +47,17 @@ export class EditProduct implements OnInit {
   }
 
   updateProduct(value: ProductFormValue): void {
-    if (this.productId === null || this.saving()) {
+    const product = this.product();
+
+    if (this.productId === null || product === null || this.saving()) {
       return;
     }
 
     const request: UpdateProductRequest = {
       name: value.name,
       description: value.description,
-      price: value.price
+      price: value.price,
+      version: product.version
     };
 
     this.saving.set(true);

@@ -12,7 +12,8 @@ describe('TableFloorPlan', () => {
     status: 'Available',
     activeOrderId: null,
     positionX: null,
-    positionY: null
+    positionY: null,
+    version: 7
   };
 
   beforeEach(() => {

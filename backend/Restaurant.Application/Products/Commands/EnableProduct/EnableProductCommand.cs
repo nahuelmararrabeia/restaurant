@@ -3,5 +3,6 @@
 namespace Restaurant.Application.Products.Commands.EnableProduct;
 
 public sealed record EnableProductCommand(
-    int ProductId
+    int ProductId,
+    long Version
 ) : IRequest;

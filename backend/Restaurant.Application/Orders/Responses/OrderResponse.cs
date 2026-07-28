@@ -10,4 +10,5 @@ public sealed record OrderResponse(
     DateTime OrderedAt,
     DateTime? ClosedAt,
     List<OrderItemResponse> Items,
-    decimal Total);
+    decimal Total,
+    long Version);

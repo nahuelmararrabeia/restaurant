@@ -27,6 +27,10 @@ public sealed class UpdateTablePositionCommandHandler
             throw new NotFoundException(
                 $"Table {request.Id} was not found.");
 
+        Restaurant.Application.Common.ConcurrencyGuard.EnsureVersion(
+            table,
+            request.Version);
+
         table.SetPosition(request.PositionX, request.PositionY);
 
         await _tableRepository.SaveChangesAsync(cancellationToken);

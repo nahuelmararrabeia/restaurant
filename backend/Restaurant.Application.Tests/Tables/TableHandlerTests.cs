@@ -52,13 +52,13 @@ public sealed class TableHandlerTests
     [Fact]
     public async Task Update_changes_table()
     {
-        var table = new Table(1, 2);
+        var table = new Table(1, 2) { Version = 1 };
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
         _tables.ExistsByNumberAsync(2, Arg.Any<CancellationToken>())
             .Returns(false);
 
         await new UpdateTableCommandHandler(_tables).Handle(
-            new UpdateTableCommand(1, 2, 6),
+            new UpdateTableCommand(1, 2, 6, 1),
             CancellationToken.None);
 
         Assert.Equal(2, table.Number);
@@ -68,11 +68,11 @@ public sealed class TableHandlerTests
     [Fact]
     public async Task UpdatePosition_changes_and_persists_position()
     {
-        var table = new Table(1, 4);
+        var table = new Table(1, 4) { Version = 1 };
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
 
         await new UpdateTablePositionCommandHandler(_tables).Handle(
-            new UpdateTablePositionCommand(1, 25, 75),
+            new UpdateTablePositionCommand(1, 25, 75, 1),
             CancellationToken.None);
 
         Assert.Equal(25, table.PositionX);
@@ -84,11 +84,11 @@ public sealed class TableHandlerTests
     [Fact]
     public async Task Delete_removes_available_table()
     {
-        var table = new Table(1, 4);
+        var table = new Table(1, 4) { Version = 1 };
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
 
         await new DeleteTableCommandHandler(_tables).Handle(
-            new DeleteTableCommand(1),
+            new DeleteTableCommand(1, 1),
             CancellationToken.None);
 
         _tables.Received(1).Delete(table);
@@ -97,65 +97,65 @@ public sealed class TableHandlerTests
     [Fact]
     public async Task Delete_rejects_occupied_table()
     {
-        var table = new Table(1, 4);
+        var table = new Table(1, 4) { Version = 1 };
         table.Occupy();
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
 
         await Assert.ThrowsAsync<BusinessException>(() =>
             new DeleteTableCommandHandler(_tables).Handle(
-                new DeleteTableCommand(1),
+                new DeleteTableCommand(1, 1),
                 CancellationToken.None));
     }
 
     [Fact]
     public async Task Enable_enables_table()
     {
-        var table = new Table(1, 4);
+        var table = new Table(1, 4) { Version = 1 };
         table.Disable();
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
         await new EnableTableCommandHandler(_tables).Handle(
-            new EnableTableCommand(1), CancellationToken.None);
+            new EnableTableCommand(1, 1), CancellationToken.None);
         Assert.Equal(TableStatus.Available, table.Status);
     }
 
     [Fact]
     public async Task Disable_disables_table()
     {
-        var table = new Table(1, 4);
+        var table = new Table(1, 4) { Version = 1 };
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
         await new DisableTableCommandHandler(_tables).Handle(
-            new DisableTableCommand(1), CancellationToken.None);
+            new DisableTableCommand(1, 1), CancellationToken.None);
         Assert.Equal(TableStatus.Disabled, table.Status);
     }
 
     [Fact]
     public async Task Reserve_reserves_table()
     {
-        var table = new Table(1, 4);
+        var table = new Table(1, 4) { Version = 1 };
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
         await new ReserveTableCommandHandler(_tables).Handle(
-            new ReserveTableCommand(1), CancellationToken.None);
+            new ReserveTableCommand(1, 1), CancellationToken.None);
         Assert.Equal(TableStatus.Reserved, table.Status);
     }
 
     [Fact]
     public async Task Occupy_occupies_table()
     {
-        var table = new Table(1, 4);
+        var table = new Table(1, 4) { Version = 1 };
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
         await new OccupyTableCommandHandler(_tables).Handle(
-            new OccupyTableCommand(1), CancellationToken.None);
+            new OccupyTableCommand(1, 1), CancellationToken.None);
         Assert.Equal(TableStatus.Occupied, table.Status);
     }
 
     [Fact]
     public async Task Release_releases_table()
     {
-        var table = new Table(1, 4);
+        var table = new Table(1, 4) { Version = 1 };
         table.Occupy();
         _tables.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(table);
         await new ReleaseTableCommandHandler(_tables).Handle(
-            new ReleaseTableCommand(1), CancellationToken.None);
+            new ReleaseTableCommand(1, 1), CancellationToken.None);
         Assert.Equal(TableStatus.Available, table.Status);
     }
 
@@ -194,6 +194,6 @@ public sealed class TableHandlerTests
 
         await Assert.ThrowsAsync<NotFoundException>(() =>
             new DisableTableCommandHandler(_tables).Handle(
-                new DisableTableCommand(99), CancellationToken.None));
+                new DisableTableCommand(99, 1), CancellationToken.None));
     }
 }
