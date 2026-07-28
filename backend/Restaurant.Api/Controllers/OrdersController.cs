@@ -60,8 +60,11 @@ public sealed class OrdersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(
         CreateOrderCommand command,
+        [FromHeader(Name = "Idempotency-Key")] string idempotencyKey,
         CancellationToken cancellationToken)
     {
+        command = command with { IdempotencyKey = idempotencyKey };
+
         var id = await _sender.Send(command, cancellationToken);
 
         return CreatedAtAction(
@@ -77,9 +80,14 @@ public sealed class OrdersController : ControllerBase
     public async Task<IActionResult> AddItem(
         int id,
         AddOrderItemCommand command,
+        [FromHeader(Name = "Idempotency-Key")] string idempotencyKey,
         CancellationToken cancellationToken)
     {
-        command = command with { OrderId = id };
+        command = command with
+        {
+            OrderId = id,
+            IdempotencyKey = idempotencyKey
+        };
 
         var response = await _sender.Send(command, cancellationToken);
 

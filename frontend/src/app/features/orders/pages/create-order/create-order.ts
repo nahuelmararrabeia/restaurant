@@ -20,6 +20,7 @@ import { SubsectionHeader } from '../../../../shared/components/subsection-heade
 import { ErrorState } from '../../../../shared/components/error-state/error-state';
 import { LoadingState } from '../../../../shared/components/loading-state/loading-state';
 import { NgIcon } from '@ng-icons/core';
+import { createIdempotencyKey } from '../../../../shared/utils/idempotency-key';
 
 @Component({
   selector: 'app-create-order',
@@ -48,6 +49,7 @@ export class CreateOrder implements OnInit {
 
   readonly loadError = signal<string | null>(null);
   readonly createError = signal<string | null>(null);
+  private idempotencyKey: string | null = null;
 
   readonly selectedTable = computed(() => {
     const tableId = this.selectedTableId();
@@ -100,6 +102,9 @@ export class CreateOrder implements OnInit {
     }
 
     this.createError.set(null);
+    if (this.selectedTableId() !== table.id) {
+      this.idempotencyKey = null;
+    }
     this.selectedTableId.set(table.id);
   }
 
@@ -122,15 +127,17 @@ export class CreateOrder implements OnInit {
 
     this.creating.set(true);
     this.createError.set(null);
+    this.idempotencyKey ??= createIdempotencyKey();
 
     this.ordersApi
-      .create(request)
+      .create(request, this.idempotencyKey)
       .pipe(
         finalize(() => this.creating.set(false)),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: order => {
+          this.idempotencyKey = null;
           void this.router.navigate([
             '/orders',
             order.id
@@ -143,6 +150,7 @@ export class CreateOrder implements OnInit {
             );
 
             this.selectedTableId.set(null);
+            this.idempotencyKey = null;
 
             this.createError.set(
               'The selected table is no longer available. Choose another table.'

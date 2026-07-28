@@ -37,20 +37,26 @@ export class OrdersApi {
     );
   }
 
-  create(request: CreateOrderRequest): Observable<Order> {
+  create(
+    request: CreateOrderRequest,
+    idempotencyKey: string
+  ): Observable<Order> {
     return this.http.post<Order>(
       this.baseUrl,
-      request
+      request,
+      { headers: { 'Idempotency-Key': idempotencyKey } }
     );
   }
 
   addItem(
     orderId: number,
-    request: AddOrderItemRequest
+    request: AddOrderItemRequest,
+    idempotencyKey: string
   ): Observable<Order> {
     return this.http.post<Order>(
       `${this.baseUrl}/${orderId}/items`,
-      request
+      request,
+      { headers: { 'Idempotency-Key': idempotencyKey } }
     );
   }
 

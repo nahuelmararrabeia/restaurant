@@ -93,12 +93,16 @@ describe('OrdersService', () => {
     const success = vi.fn();
     state.addItem({ productId: 2, quantity: 3, notes: null }, success);
 
-    expect(ordersApi.addItem).toHaveBeenCalledWith(3, {
-      productId: 2,
-      quantity: 3,
-      notes: null,
-      version: 7
-    });
+    expect(ordersApi.addItem).toHaveBeenCalledWith(
+      3,
+      {
+        productId: 2,
+        quantity: 3,
+        notes: null,
+        version: 7
+      },
+      expect.any(String)
+    );
     expect(success).toHaveBeenCalledOnce();
     expect(state.totalUnits()).toBe(3);
   });

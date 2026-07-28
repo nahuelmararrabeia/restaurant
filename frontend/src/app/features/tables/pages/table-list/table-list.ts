@@ -24,6 +24,7 @@ import {
   TableFloorPlan,
   TablePositionChange
 } from '../../components/table-floor-plan/table-floor-plan';
+import { createIdempotencyKey } from '../../../../shared/utils/idempotency-key';
 
 @Component({
   selector: 'app-table-list',
@@ -53,6 +54,7 @@ export class TableList implements OnInit {
   readonly actionInProgress = signal<number | null>(null);
   readonly positionSavingId = signal<number | null>(null);
   readonly actionError = signal<string | null>(null);
+  private readonly createOrderKeys = new Map<number, string>();
 
   ngOnInit(): void {
     this.loadTables();
@@ -90,18 +92,22 @@ export class TableList implements OnInit {
 
     this.actionInProgress.set(table.id);
     this.actionError.set(null);
+    const idempotencyKey =
+      this.createOrderKeys.get(table.id) ?? createIdempotencyKey();
+    this.createOrderKeys.set(table.id, idempotencyKey);
 
     this.ordersApi
       .create({
         tableId: table.id,
         tableVersion: table.version
-      })
+      }, idempotencyKey)
       .pipe(
         finalize(() => this.actionInProgress.set(null)),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: order => {
+          this.createOrderKeys.delete(table.id);
           void this.router.navigate(['/orders', order.id]);
         },
         error: (error: HttpErrorResponse) => {

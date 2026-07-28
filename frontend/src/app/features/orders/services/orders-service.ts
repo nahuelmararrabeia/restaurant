@@ -15,6 +15,7 @@ import { Product } from '../../../shared/domain/products/product';
 import { ProductsApi } from '../../products/services/products-api';
 import { OrderItemFormValue } from '../models/order-item-form-value';
 import { OrdersApi } from './orders-api';
+import { createIdempotencyKey } from '../../../shared/utils/idempotency-key';
 
 export type OrderItemAction = 'update' | 'remove';
 
@@ -36,6 +37,8 @@ export class OrdersService {
   private readonly destroyRef = inject(DestroyRef);
 
   private orderId: number | null = null;
+  private addItemIdempotency:
+    { fingerprint: string; key: string } | null = null;
 
   readonly order = signal<Order | null>(null);
   readonly products = signal<Product[]>([]);
@@ -131,23 +134,33 @@ export class OrdersService {
 
     this.addingItem.set(true);
     this.actionError.set(null);
+    const fingerprint = JSON.stringify(value);
+
+    if (this.addItemIdempotency?.fingerprint !== fingerprint) {
+      this.addItemIdempotency = {
+        fingerprint,
+        key: createIdempotencyKey()
+      };
+    }
 
     this.ordersApi
       .addItem(this.orderId, {
         ...value,
         version: this.order()!.version
-      })
+      }, this.addItemIdempotency.key)
       .pipe(
         finalize(() => this.addingItem.set(false)),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: order => {
+          this.addItemIdempotency = null;
           this.order.set(order);
           onSuccess?.();
         },
         error: (error: HttpErrorResponse) => {
           if (error.status === 409) {
+            this.addItemIdempotency = null;
             this.actionError.set(
               'The order can no longer be modified because its status changed.'
             );

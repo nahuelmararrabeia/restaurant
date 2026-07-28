@@ -40,9 +40,14 @@ describe('OrdersApi', () => {
     expect(get.request.method).toBe('GET');
     get.flush({});
 
-    api.create({ tableId: 4, tableVersion: 7 }).subscribe();
+    api.create(
+      { tableId: 4, tableVersion: 7 },
+      'create-key'
+    ).subscribe();
     const create = http.expectOne(baseUrl);
     expect(create.request.method).toBe('POST');
+    expect(create.request.headers.get('Idempotency-Key'))
+      .toBe('create-key');
     expect(create.request.body).toEqual({ tableId: 4, tableVersion: 7 });
     create.flush({});
   });
@@ -53,9 +58,11 @@ describe('OrdersApi', () => {
       quantity: 1,
       notes: null,
       version: 7
-    }).subscribe();
+    }, 'add-item-key').subscribe();
     const add = http.expectOne(`${baseUrl}/3/items`);
     expect(add.request.method).toBe('POST');
+    expect(add.request.headers.get('Idempotency-Key'))
+      .toBe('add-item-key');
     add.flush({});
 
     api.updateItem(3, 8, {

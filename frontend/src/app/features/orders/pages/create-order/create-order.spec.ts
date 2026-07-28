@@ -61,10 +61,13 @@ describe('CreateOrder', () => {
     create.tables.set([table]);
     create.selectedTableId.set(1);
     create.createOrder();
-    expect(ordersApi.create).toHaveBeenCalledWith({
-      tableId: 1,
-      tableVersion: 7
-    });
+    expect(ordersApi.create).toHaveBeenCalledWith(
+      {
+        tableId: 1,
+        tableVersion: 7
+      },
+      expect.any(String)
+    );
     expect(router.navigate).toHaveBeenCalledWith(['/orders', 8]);
   });
 

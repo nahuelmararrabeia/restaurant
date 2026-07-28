@@ -24,6 +24,8 @@ public sealed class OrderHandlerTests
         Substitute.For<ITableRepository>();
     private readonly IProductRepository _products =
         Substitute.For<IProductRepository>();
+    private readonly IIdempotencyRepository _idempotency =
+        Substitute.For<IIdempotencyRepository>();
 
     [Fact]
     public async Task Create_persists_order_and_occupies_table()
@@ -33,8 +35,12 @@ public sealed class OrderHandlerTests
         _orders.GetOpenByTableIdAsync(1, Arg.Any<CancellationToken>())
             .Returns((Order?)null);
 
-        await new CreateOrderCommandHandler(_orders, _tables).Handle(
-            new CreateOrderCommand(1, 1), CancellationToken.None);
+        await new CreateOrderCommandHandler(
+            _orders,
+            _tables,
+            _idempotency).Handle(
+            new CreateOrderCommand(1, 1, "create-key"),
+            CancellationToken.None);
 
         Assert.Equal(TableStatus.Occupied, table.Status);
         await _orders.Received(1).AddAsync(
@@ -53,8 +59,12 @@ public sealed class OrderHandlerTests
             .Returns(new Order());
 
         await Assert.ThrowsAsync<ConflictException>(() =>
-            new CreateOrderCommandHandler(_orders, _tables).Handle(
-                new CreateOrderCommand(1, 1), CancellationToken.None));
+            new CreateOrderCommandHandler(
+                _orders,
+                _tables,
+                _idempotency).Handle(
+                new CreateOrderCommand(1, 1, "create-key"),
+                CancellationToken.None));
     }
 
     [Fact]
@@ -69,12 +79,46 @@ public sealed class OrderHandlerTests
                 new ConflictException("Unique constraint.")));
 
         var exception = await Assert.ThrowsAsync<ConflictException>(() =>
-            new CreateOrderCommandHandler(_orders, _tables).Handle(
-                new CreateOrderCommand(1, 1), CancellationToken.None));
+            new CreateOrderCommandHandler(
+                _orders,
+                _tables,
+                _idempotency).Handle(
+                new CreateOrderCommand(1, 1, "create-key"),
+                CancellationToken.None));
 
         Assert.Equal(
             "Table 1 already has an open order.",
             exception.Message);
+    }
+
+    [Fact]
+    public async Task Create_replays_the_original_order_for_the_same_key()
+    {
+        _idempotency.GetAsync(
+                Restaurant.Application.Common.Idempotency.CreateOrder,
+                "create-key",
+                Arg.Any<CancellationToken>())
+            .Returns(new IdempotencyRecord
+            {
+                Key = "create-key",
+                Operation = Restaurant.Application.Common.Idempotency
+                    .CreateOrder,
+                RequestHash = Restaurant.Application.Common.Idempotency
+                    .Hash(1, 1),
+                OrderId = 42
+            });
+
+        var result = await new CreateOrderCommandHandler(
+            _orders,
+            _tables,
+            _idempotency).Handle(
+            new CreateOrderCommand(1, 1, "create-key"),
+            CancellationToken.None);
+
+        Assert.Equal(42, result);
+        await _orders.DidNotReceive().AddAsync(
+            Arg.Any<Order>(),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -86,15 +130,68 @@ public sealed class OrderHandlerTests
         _products.GetByIdAsync(2, Arg.Any<CancellationToken>())
             .Returns(new Product { Id = 2, Name = "Coffee", Price = 900 });
 
-        var result = await new AddOrderItemCommandHandler(_orders, _products)
+        var result = await new AddOrderItemCommandHandler(
+            _orders,
+            _products,
+            _idempotency)
             .Handle(
-                new AddOrderItemCommand(1, 2, 3, "No sugar", 1),
+                new AddOrderItemCommand(
+                    1,
+                    2,
+                    3,
+                    "No sugar",
+                    1,
+                    "add-key"),
                 CancellationToken.None);
 
         var item = Assert.Single(result.Items);
         Assert.Equal(3, item.Quantity);
         Assert.Equal("No sugar", item.Notes);
         Assert.Equal(2700, result.Total);
+    }
+
+    [Fact]
+    public async Task AddItem_replays_without_adding_the_item_again()
+    {
+        var order = PendingOrder();
+        _idempotency.GetAsync(
+                Restaurant.Application.Common.Idempotency.AddOrderItem,
+                "add-key",
+                Arg.Any<CancellationToken>())
+            .Returns(new IdempotencyRecord
+            {
+                Key = "add-key",
+                Operation = Restaurant.Application.Common.Idempotency
+                    .AddOrderItem,
+                RequestHash = Restaurant.Application.Common.Idempotency.Hash(
+                    1,
+                    2,
+                    3,
+                    "No sugar",
+                    1),
+                OrderId = 1
+            });
+        _orders.GetByIdWithDetailsAsync(
+                1,
+                Arg.Any<CancellationToken>())
+            .Returns(order);
+
+        var result = await new AddOrderItemCommandHandler(
+            _orders,
+            _products,
+            _idempotency).Handle(
+            new AddOrderItemCommand(
+                1,
+                2,
+                3,
+                "No sugar",
+                1,
+                "add-key"),
+            CancellationToken.None);
+
+        Assert.Empty(result.Items);
+        await _orders.DidNotReceive().SaveChangesAsync(
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]

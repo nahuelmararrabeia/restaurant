@@ -58,10 +58,13 @@ describe('TableList', () => {
     const list = component();
     list.createOrder(table);
 
-    expect(ordersApi.create).toHaveBeenCalledWith({
-      tableId: 1,
-      tableVersion: 7
-    });
+    expect(ordersApi.create).toHaveBeenCalledWith(
+      {
+        tableId: 1,
+        tableVersion: 7
+      },
+      expect.any(String)
+    );
     expect(router.navigate).toHaveBeenCalledWith(['/orders', 9]);
   });
 
