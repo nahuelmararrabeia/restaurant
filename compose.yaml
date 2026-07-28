@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Restaurant.Api/Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: Data Source=/data/restaurant.db
+    volumes:
+      - restaurant-data:/data
+    expose:
+      - "8080"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+    restart: unless-stopped
+
+volumes:
+  restaurant-data:

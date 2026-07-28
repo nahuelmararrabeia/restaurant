@@ -1,4 +1,6 @@
 using Restaurant.Api;
+using Microsoft.EntityFrameworkCore;
+using Restaurant.Infrastructure.Persistence;
 using TaskManagement.Application;
 using TaskManagement.Infrastructure;
 
@@ -44,5 +46,13 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseHealthChecks("/health");
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<AppDbContext>();
+
+    await dbContext.Database.MigrateAsync();
+}
 
 app.Run();
